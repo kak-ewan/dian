@@ -1230,32 +1230,32 @@ document.querySelector('.file-input-button').addEventListener('click', function(
             }
             
             try {
-                loadingOverlay.classList.remove('hidden');
-                hideTransactionModal();
-                
-                const formData = new FormData();
-                formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
-                formData.append('date', date);
-                formData.append('description', description);
-                formData.append('type', currentTransactionType);
-                formData.append('amount', amount);
-                formData.append('notes', notes);
-                
-                if (transactionId) {
-                    formData.append('transactionId', transactionId);
-                }
-                
-                if (imageFile) {
-                    formData.append('image', imageFile);
-                } else if (existingImage) {
-                    formData.append('existingImage', existingImage);
-                }
-                
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-                
+    loadingOverlay.classList.remove('hidden');
+    hideTransactionModal();
+    
+    const formData = new FormData();
+    formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
+    formData.append('date', date);
+    formData.append('description', description);
+    formData.append('type', currentTransactionType);
+    formData.append('amount', amount);
+    formData.append('notes', notes);
+    formData.append('username', currentUser.username);
+    
+    if (transactionId) {
+      formData.append('transactionId', transactionId);
+    }
+    
+    if (imageFile) {
+      formData.append('image', imageFile); // Send the file directly
+    } else if (existingImage) {
+      formData.append('existingImage', existingImage);
+    }
+    
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      body: formData
+    });    
                 const data = await response.json();
                 
                 if (data.success) {
