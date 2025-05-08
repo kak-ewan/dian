@@ -613,6 +613,10 @@
             
             // Filter dropdowns
             setupFilterDropdowns();
+                        // Menghubungkan tombol upload dengan input file
+document.querySelector('.file-input-button').addEventListener('click', function() {
+    document.getElementById('transactionImage').click();
+});
             
             // Edit and delete buttons (delegated events)
             document.addEventListener('click', function(e) {
