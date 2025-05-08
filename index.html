@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAS UMUM</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+        }
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .slide-in {
+            animation: slideIn 0.5s;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .notification {
+            animation: slideInNotification 0.3s, fadeOutNotification 0.3s 3s forwards;
+            transform-origin: top center;
+        }
+        @keyframes slideInNotification {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOutNotification {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100%); opacity: 0; }
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .filter-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .filter-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.375rem;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .filter-dropdown-content.show {
+            display: block;
+        }
+        .filter-dropdown-item {
+            padding: 8px 12px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+        .filter-dropdown-item:hover {
+            background-color: #f1f5f9;
+        }
+        .filter-dropdown-item.active {
+            background-color: #e2e8f0;
+            font-weight: 500;
+        }
+        .filter-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .filter-badge-close {
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+        }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+        .file-input-button {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            background-color: #f3f4f6;
+            cursor: pointer;
+        }
+        .file-input-button:hover {
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="app">
+        <!-- Notification -->
+        <div id="notification" class="fixed top-0 left-0 right-0 z-50 hidden">
+            <div class="max-w-md mx-auto m-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md notification">
+                <div class="flex items-center">
+                    <div class="py-1"><i class="fas fa-check-circle text-green-500 mr-2"></i></div>
+                    <div id="notificationMessage">Transaksi berhasil disimpan!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-5 rounded-lg shadow-lg text-center">
+                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4 mx-auto"></div>
+                <h2 class="text-xl font-semibold text-gray-700">Memuat...</h2>
+                <p class="text-gray-600">Mohon tunggu sebentar</p>
+            </div>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="loginScreen" class="hidden min-h-screen flex flex-col items-center justify-center p-4">
+            <div class="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden fade-in">
+                <div class="p-6 text-center">
+                    <div id="schoolLogo" class="mx-auto mb-4 w-24 h-24 logo-container">
+                        <!-- Logo will be inserted here -->
+                    </div>
+                    <h1 id="appTitle" class="text-2xl font-bold text-gray-800 mb-2">KAS UMUM</h1>
+                    <p id="appDescription" class="text-gray-600 mb-6">
+                        <!-- Description will be inserted here -->
+                    </p>
+                    <div class="mb-4">
+                        <label for="username" class="block text-gray-700 text-sm font-bold mb-2 text-left">Username</label>
+                        <input type="text" id="username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan username">
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-gray-700 text-sm font-bold mb-2 text-left">Password</label>
+                        <input type="password" id="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan password">
+                    </div>
+                    <div id="loginError" class="text-red-500 text-sm mb-4 hidden"></div>
+                    <button id="loginBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                        Masuk
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboardScreen" class="hidden min-h-screen">
+            <!-- Header -->
+            <header class="bg-blue-600 text-white shadow-md">
+                <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <div id="headerLogo" class="mr-3 w-10 h-10 logo-container">
+                            <!-- Logo will be inserted here -->
+                        </div>
+                        <h1 id="headerTitle" class="text-xl font-bold">KAS UMUM</h1>
+                    </div>
+                    <div class="flex items-center">
+                        <span id="userRole" class="mr-3 hidden md:inline"></span>
+                        <button id="logoutBtn" class="bg-red-500 hover:bg-red-700 text-white text-sm py-1 px-3 rounded">
+                            Keluar
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="container mx-auto px-4 py-6">
+                <!-- Balance Card -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6 text-center slide-in">
+                    <h2 class="text-gray-600 text-lg mb-1">Saldo Saat Ini</h2>
+                    <div id="currentBalance" class="text-4xl md:text-5xl font-bold text-blue-600 mb-2">Rp 0</div>
+                    <p class="text-gray-500 text-sm">Terakhir diperbarui: <span id="lastUpdated">-</span></p>
+                </div>
+
+                <!-- Action Buttons (Only for Bendahara) -->
+                <div id="actionButtons" class="grid grid-cols-2 gap-4 mb-6 slide-in" style="animation-delay: 0.1s">
+                    <button id="incomeBtn" class="bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg shadow flex items-center justify-center">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        <span>Pemasukan</span>
+                    </button>
+                    <button id="expenseBtn" class="bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg shadow flex items-center justify-center">
+                        <i class="fas fa-minus-circle mr-2"></i>
+                        <span>Pengeluaran</span>
+                    </button>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6 slide-in" style="animation-delay: 0.2s">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Transaksi Terakhir</h2>
+                        <button id="viewAllBtn" class="text-blue-500 hover:text-blue-700 text-sm">
+                            Lihat Rekap
+                        </button>
+                    </div>
+                    <div id="recentTransactions" class="space-y-3">
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                            <p>Memuat transaksi...</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Transaction Form Modal -->
+        <div id="transactionModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-40 hidden">
+            <div class="bg-white rounded-lg shadow-lg max-w-md w-full mx-4 fade-in">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 id="modalTitle" class="text-xl font-semibold text-gray-800">Tambah Transaksi</h2>
+                        <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form id="transactionForm">
+                        <input type="hidden" id="transactionId" value="">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionDate">
+                                Tanggal
+                            </label>
+                            <input type="date" id="transactionDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionDescription">
+                                Uraian
+                            </label>
+                            <input type="text" id="transactionDescription" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan uraian transaksi">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionAmount">
+                                Jumlah (Rp)
+                            </label>
+                            <input type="number" id="transactionAmount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="0">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionImage">
+                                Foto Barang/Bukti
+                            </label>
+                            <div class="file-input-wrapper">
+                                <button type="button" class="file-input-button">
+                                    <i class="fas fa-upload mr-2"></i>Pilih File
+                                </button>
+                                <input type="file" id="transactionImage" accept="image/*" class="hidden">
+                            </div>
+                            <span id="fileName" class="ml-2 text-sm text-gray-600">Tidak ada file dipilih</span>
+                            <img id="imagePreview" class="image-preview rounded" src="" alt="Preview gambar">
+                            <input type="hidden" id="existingImage" value="">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionNotes">
+                                Keterangan
+                            </label>
+                            <textarea id="transactionNotes" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" rows="3" placeholder="Masukkan keterangan (opsional)"></textarea>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" id="cancelTransactionBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
+                                Batal
+                            </button>
+                            <button type="submit" id="submitTransactionBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recap Modal -->
+        <div id="recapModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-40 hidden">
+            <div class="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 fade-in" style="max-height: 90vh;">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Rekap Transaksi</h2>
+                        <button id="closeRecapBtn" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Filter Section -->
+                    <div class="mb-4">
+                        <div class="flex flex-wrap items-center mb-2">
+                            <span class="text-gray-700 font-medium mr-2">Filter:</span>
+                            
+                            <!-- Type Filter -->
+                            <div class="filter-dropdown mr-2 mb-2">
+                                <button id="typeFilterBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm flex items-center">
+                                    <span>Jenis</span>
+                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                                </button>
+                                <div id="typeFilterDropdown" class="filter-dropdown-content">
+                                    <div class="filter-dropdown-item" data-value="all">Semua</div>
+                                    <div class="filter-dropdown-item" data-value="income">Pemasukan</div>
+                                    <div class="filter-dropdown-item" data-value="expense">Pengeluaran</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Month Filter -->
+                            <div class="filter-dropdown mr-2 mb-2">
+                                <button id="monthFilterBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm flex items-center">
+                                    <span>Bulan</span>
+                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                                </button>
+                                <div id="monthFilterDropdown" class="filter-dropdown-content">
+                                    <div class="filter-dropdown-item" data-value="all">Semua Bulan</div>
+                                    <div class="filter-dropdown-item" data-value="1">Januari</div>
+                                    <div class="filter-dropdown-item" data-value="2">Februari</div>
+                                    <div class="filter-dropdown-item" data-value="3">Maret</div>
+                                    <div class="filter-dropdown-item" data-value="4">April</div>
+                                    <div class="filter-dropdown-item" data-value="5">Mei</div>
+                                    <div class="filter-dropdown-item" data-value="6">Juni</div>
+                                    <div class="filter-dropdown-item" data-value="7">Juli</div>
+                                    <div class="filter-dropdown-item" data-value="8">Agustus</div>
+                                    <div class="filter-dropdown-item" data-value="9">September</div>
+                                    <div class="filter-dropdown-item" data-value="10">Oktober</div>
+                                    <div class="filter-dropdown-item" data-value="11">November</div>
+                                    <div class="filter-dropdown-item" data-value="12">Desember</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Year Filter -->
+                            <div class="filter-dropdown mr-2 mb-2">
+                                <button id="yearFilterBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm flex items-center">
+                                    <span>Tahun</span>
+                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                                </button>
+                                <div id="yearFilterDropdown" class="filter-dropdown-content">
+                                    <div class="filter-dropdown-item" data-value="all">Semua Tahun</div>
+                                    <!-- Years will be populated dynamically -->
+                                </div>
+                            </div>
+                            
+                            <!-- Reset Filter Button -->
+                            <button id="resetFilterBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm mb-2">
+                                <i class="fas fa-sync-alt mr-1"></i> Reset
+                            </button>
+                        </div>
+                        
+                        <!-- Active Filters Display -->
+                        <div id="activeFilters" class="flex flex-wrap mt-2"></div>
+                        
+                        <!-- Summary Section -->
+                        <div class="grid grid-cols-3 gap-2 mt-3">
+                            <div class="bg-blue-50 p-2 rounded text-center">
+                                <div class="text-sm text-gray-600">Total Transaksi</div>
+                                <div id="totalTransactions" class="font-bold text-blue-600">0</div>
+                            </div>
+                            <div class="bg-green-50 p-2 rounded text-center">
+                                <div class="text-sm text-gray-600">Total Pemasukan</div>
+                                <div id="totalIncome" class="font-bold text-green-600">Rp 0</div>
+                            </div>
+                            <div class="bg-red-50 p-2 rounded text-center">
+                                <div class="text-sm text-gray-600">Total Pengeluaran</div>
+                                <div id="totalExpense" class="font-bold text-red-600">Rp 0</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Transactions Table -->
+                    <div class="overflow-auto" style="max-height: 50vh;">
+                        <table class="min-w-full bg-white">
+                            <thead>
+                                <tr>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Tanggal
+                                    </th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Uraian
+                                    </th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Pemasukan
+                                    </th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Pengeluaran
+                                    </th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Saldo
+                                    </th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Keterangan
+                                    </th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Gambar
+                                    </th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="recapTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-gray-500">
+                                        <i class="fas fa-spinner fa-spin mr-2"></i>Memuat data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Preview Modal -->
+        <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4">
+                <div class="p-4 flex justify-between items-center border-b">
+                    <h3 class="text-lg font-semibold">Preview Gambar</h3>
+                    <button id="closeImageModalBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-4 flex justify-center">
+                    <img id="modalImagePreview" src="" alt="Preview gambar" class="max-h-[70vh] max-w-full">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Endpoint
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzf7DL1YYmgLlcU-8yLntOqMFHTo5wG6jAk3byn2XazqET6SrC3a6DUSITZ8mdialRP/exec';
+        
+        // Global variables
+        let currentUser = null;
+        let allTransactions = [];
+        let currentTransactionType = '';
+        let appConfig = {
+            title: 'KAS UMUM',
+            description: 'Sistem Pencatatan Keuangan Sekolah',
+            logoUrl: ''
+        };
+        
+        // Filter variables
+        let activeFilters = {
+            type: 'all',
+            month: 'all',
+            year: 'all'
+        };
+        
+        // DOM Elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboardScreen = document.getElementById('dashboardScreen');
+        const transactionModal = document.getElementById('transactionModal');
+        const recapModal = document.getElementById('recapModal');
+        const imageModal = document.getElementById('imageModal');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notificationMessage');
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+            setupEventListeners();
+        });
+        
+        // Initialize the application
+        async function initApp() {
+            try {
+                // Fetch initial data (school info, etc.)
+                const response = await fetchData('init');
+                
+                if (response && response.success) {
+                    // Set app config
+                    if (response.config) {
+                        appConfig = {
+                            title: response.config.title || 'KAS UMUM',
+                            description: response.config.description || 'Sistem Pencatatan Keuangan Sekolah',
+                            logoUrl: response.config.logoUrl || ''
+                        };
+                    }
+                    
+                    // Update document title
+                    document.title = appConfig.title;
+                    
+                    // Set app title and description
+                    document.getElementById('appTitle').textContent = appConfig.title;
+                    document.getElementById('headerTitle').textContent = appConfig.title;
+                    document.getElementById('appDescription').textContent = appConfig.description;
+                    
+                    // Set school logo
+                    updateLogo();
+                    
+                    // Check if user is already logged in (from session storage)
+                    const savedUser = sessionStorage.getItem('kasUmumUser');
+                    if (savedUser) {
+                        currentUser = JSON.parse(savedUser);
+                        showDashboard();
+                    } else {
+                        showLoginScreen();
+                    }
+                } else {
+                    showError("Gagal memuat data awal. Silakan muat ulang halaman.");
+                }
+            } catch (error) {
+                console.error("Error initializing app:", error);
+                showError("Terjadi kesalahan saat memuat aplikasi. Silakan coba lagi.");
+            }
+        }
+        
+        // Update logo in all places
+        function updateLogo() {
+            const logoContainers = [
+                document.getElementById('schoolLogo'),
+                document.getElementById('headerLogo')
+            ];
+            
+            logoContainers.forEach(container => {
+                // Clear previous content
+                container.innerHTML = '';
+                
+                if (appConfig.logoUrl && appConfig.logoUrl.trim() !== '') {
+                    // Create image element
+                    const img = document.createElement('img');
+                    img.src = appConfig.logoUrl;
+                    img.alt = appConfig.title || 'Logo';
+                    img.className = 'max-h-full max-w-full';
+                    img.onerror = function() {
+                        // If image fails to load, use default SVG
+                        useDefaultLogo(container);
+                    };
+                    
+                    // Add image to container
+                    container.appendChild(img);
+                } else {
+                    useDefaultLogo(container);
+                }
+            });
+        }
+        
+        // Use default SVG logo when no image URL is available or loading fails
+        function useDefaultLogo(container) {
+            const isHeader = container.id === 'headerLogo';
+            const size = isHeader ? 'w-6 h-6' : 'w-16 h-16';
+            
+            container.innerHTML = `<svg class="${size}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z"/><path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>`;
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Login form
+            document.getElementById('loginBtn').addEventListener('click', handleLogin);
+            
+            // Enter key for login
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin(e);
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            
+            // Transaction buttons (only for Bendahara)
+            document.getElementById('incomeBtn').addEventListener('click', () => showTransactionModal('income'));
+            document.getElementById('expenseBtn').addEventListener('click', () => showTransactionModal('expense'));
+            
+            // View all transactions button
+            document.getElementById('viewAllBtn').addEventListener('click', showRecapModal);
+            
+            // Transaction modal
+            document.getElementById('closeModalBtn').addEventListener('click', hideTransactionModal);
+            document.getElementById('cancelTransactionBtn').addEventListener('click', hideTransactionModal);
+            document.getElementById('transactionForm').addEventListener('submit', handleTransactionSubmit);
+            
+            // Image upload
+            document.getElementById('transactionImage').addEventListener('change', handleImageUpload);
+            
+            // Recap modal
+            document.getElementById('closeRecapBtn').addEventListener('click', hideRecapModal);
+            document.getElementById('resetFilterBtn').addEventListener('click', resetFilters);
+            
+            // Image modal
+            document.getElementById('closeImageModalBtn').addEventListener('click', hideImageModal);
+            
+            // Filter dropdowns
+            setupFilterDropdowns();
+            
+            // Edit and delete buttons (delegated events)
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.edit-btn')) {
+                    const transactionId = e.target.closest('.edit-btn').getAttribute('data-id');
+                    handleEditTransaction(transactionId);
+                }
+                
+                if (e.target.closest('.delete-btn')) {
+                    const transactionId = e.target.closest('.delete-btn').getAttribute('data-id');
+                    handleDeleteTransaction(transactionId);
+                }
+                
+                if (e.target.closest('.view-image-btn')) {
+                    const imageUrl = e.target.closest('.view-image-btn').getAttribute('data-image');
+                    showImageModal(imageUrl);
+                }
+            });
+        }
+        
+        // Handle image upload
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            const fileName = document.getElementById('fileName');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            if (file) {
+                fileName.textContent = file.name;
+                
+                // Show preview if it's an image
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imagePreview.src = event.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            } else {
+                fileName.textContent = 'Tidak ada file dipilih';
+                imagePreview.style.display = 'none';
+            }
+        }
+        
+        // Show image modal
+        function showImageModal(imageUrl) {
+            if (!imageUrl) return;
+            
+            const modalImage = document.getElementById('modalImagePreview');
+            modalImage.src = imageUrl;
+            imageModal.classList.remove('hidden');
+        }
+        
+        // Hide image modal
+        function hideImageModal() {
+            imageModal.classList.add('hidden');
+        }
+        
+        // Setup filter dropdowns
+        function setupFilterDropdowns() {
+            // Type filter
+            document.getElementById('typeFilterBtn').addEventListener('click', function() {
+                toggleDropdown('typeFilterDropdown');
+            });
+            
+            // Month filter
+            document.getElementById('monthFilterBtn').addEventListener('click', function() {
+                toggleDropdown('monthFilterDropdown');
+            });
+            
+            // Year filter
+            document.getElementById('yearFilterBtn').addEventListener('click', function() {
+                toggleDropdown('yearFilterDropdown');
+            });
+            
+            // Add click event listeners to dropdown items
+            document.querySelectorAll('.filter-dropdown-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    const dropdown = this.closest('.filter-dropdown-content');
+                    
+                    if (dropdown.id === 'typeFilterDropdown') {
+                        setFilter('type', value);
+                    } else if (dropdown.id === 'monthFilterDropdown') {
+                        setFilter('month', value);
+                    } else if (dropdown.id === 'yearFilterDropdown') {
+                        setFilter('year', value);
+                    }
+                    
+                    // Hide dropdown
+                    dropdown.classList.remove('show');
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdowns = document.querySelectorAll('.filter-dropdown-content');
+                dropdowns.forEach(dropdown => {
+                    const button = document.getElementById(dropdown.id.replace('Dropdown', 'Btn'));
+                    if (!button.contains(event.target)) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+            });
+        }
+        
+        // Toggle dropdown visibility
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.filter-dropdown-content').forEach(el => {
+                if (el.id !== dropdownId) {
+                    el.classList.remove('show');
+                }
+            });
+            
+            // Toggle this dropdown
+            dropdown.classList.toggle('show');
+            
+            // Prevent event from bubbling up
+            event.stopPropagation();
+        }
+        
+        // Set filter and update display
+        function setFilter(filterType, value) {
+            activeFilters[filterType] = value;
+            updateActiveFiltersDisplay();
+            applyFilters();
+        }
+        
+        // Reset all filters
+        function resetFilters() {
+            activeFilters = {
+                type: 'all',
+                month: 'all',
+                year: 'all'
+            };
+            
+            updateActiveFiltersDisplay();
+            applyFilters();
+        }
+        
+        // Update active filters display
+        function updateActiveFiltersDisplay() {
+            const container = document.getElementById('activeFilters');
+            container.innerHTML = '';
+            
+            // Add filter badges
+            if (activeFilters.type !== 'all') {
+                addFilterBadge('type', getTypeLabel(activeFilters.type));
+            }
+            
+            if (activeFilters.month !== 'all') {
+                addFilterBadge('month', getMonthLabel(activeFilters.month));
+            }
+            
+            if (activeFilters.year !== 'all') {
+                addFilterBadge('year', activeFilters.year);
+            }
+            
+            // Update dropdown items to show active state
+            updateDropdownActiveStates();
+        }
+        
+        // Add filter badge
+        function addFilterBadge(filterType, label) {
+            const container = document.getElementById('activeFilters');
+            
+            const badge = document.createElement('div');
+            badge.className = 'filter-badge';
+            badge.innerHTML = `
+                ${label}
+                <span class="filter-badge-close" data-filter="${filterType}">
+                    <i class="fas fa-times"></i>
+                </span>
+            `;
+            
+            // Add click event to remove filter
+            badge.querySelector('.filter-badge-close').addEventListener('click', function() {
+                const filterToRemove = this.getAttribute('data-filter');
+                activeFilters[filterToRemove] = 'all';
+                updateActiveFiltersDisplay();
+                applyFilters();
+            });
+            
+            container.appendChild(badge);
+        }
+        
+        // Update dropdown items to show active state
+        function updateDropdownActiveStates() {
+            // Type filter
+            document.querySelectorAll('#typeFilterDropdown .filter-dropdown-item').forEach(item => {
+                if (item.getAttribute('data-value') === activeFilters.type) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Month filter
+            document.querySelectorAll('#monthFilterDropdown .filter-dropdown-item').forEach(item => {
+                if (item.getAttribute('data-value') === activeFilters.month) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Year filter
+            document.querySelectorAll('#yearFilterDropdown .filter-dropdown-item').forEach(item => {
+                if (item.getAttribute('data-value') === activeFilters.year) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        
+        // Get type label
+        function getTypeLabel(type) {
+            switch (type) {
+                case 'income': return 'Pemasukan';
+                case 'expense': return 'Pengeluaran';
+                default: return 'Semua';
+            }
+        }
+        
+        // Get month label
+        function getMonthLabel(month) {
+            const months = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            
+            return months[parseInt(month) - 1] || 'Semua Bulan';
+        }
+        
+        // Apply filters to transactions
+        function applyFilters() {
+            let filteredTransactions = [...allTransactions];
+            
+            // Filter by type
+            if (activeFilters.type === 'income') {
+                filteredTransactions = filteredTransactions.filter(t => t.income > 0);
+            } else if (activeFilters.type === 'expense') {
+                filteredTransactions = filteredTransactions.filter(t => t.expense > 0);
+            }
+            
+            // Filter by month
+            if (activeFilters.month !== 'all') {
+                const month = parseInt(activeFilters.month);
+                filteredTransactions = filteredTransactions.filter(t => {
+                    const date = new Date(t.date);
+                    return date.getMonth() + 1 === month;
+                });
+            }
+            
+            // Filter by year
+            if (activeFilters.year !== 'all') {
+                const year = parseInt(activeFilters.year);
+                filteredTransactions = filteredTransactions.filter(t => {
+                    const date = new Date(t.date);
+                    return date.getFullYear() === year;
+                });
+            }
+            
+            // Update recap table with filtered transactions
+            updateRecapTable(filteredTransactions);
+            
+            // Update summary statistics
+            updateSummaryStatistics(filteredTransactions);
+        }
+        
+        // Update summary statistics
+        function updateSummaryStatistics(transactions) {
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            transactions.forEach(transaction => {
+                if (transaction.income > 0) {
+                    totalIncome += parseFloat(transaction.income);
+                }
+                if (transaction.expense > 0) {
+                    totalExpense += parseFloat(transaction.expense);
+                }
+            });
+            
+            document.getElementById('totalTransactions').textContent = transactions.length;
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+        }
+        
+        // Populate year filter dropdown
+        function populateYearFilter() {
+            const yearDropdown = document.getElementById('yearFilterDropdown');
+            const years = new Set();
+            
+            // Extract unique years from transactions
+            allTransactions.forEach(transaction => {
+                const date = new Date(transaction.date);
+                years.add(date.getFullYear());
+            });
+            
+            // Sort years in descending order
+            const sortedYears = Array.from(years).sort((a, b) => b - a);
+            
+            // Clear existing items except "All Years"
+            const allYearsItem = yearDropdown.querySelector('[data-value="all"]');
+            yearDropdown.innerHTML = '';
+            yearDropdown.appendChild(allYearsItem);
+            
+            // Add year items
+            sortedYears.forEach(year => {
+                const item = document.createElement('div');
+                item.className = 'filter-dropdown-item';
+                item.setAttribute('data-value', year.toString());
+                item.textContent = year.toString();
+                
+                item.addEventListener('click', function() {
+                    setFilter('year', this.getAttribute('data-value'));
+                    yearDropdown.classList.remove('show');
+                });
+                
+                yearDropdown.appendChild(item);
+            });
+        }
+        
+        // Show login screen
+        function showLoginScreen() {
+            loadingOverlay.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            dashboardScreen.classList.add('hidden');
+        }
+        
+        // Show dashboard
+        async function showDashboard() {
+            try {
+                loadingOverlay.classList.remove('hidden');
+                
+                // Set user role display
+                document.getElementById('userRole').textContent = currentUser.role;
+                
+                // Show/hide action buttons based on role
+                const actionButtons = document.getElementById('actionButtons');
+                if (currentUser.role === 'Bendahara') {
+                    actionButtons.classList.remove('hidden');
+                } else {
+                    actionButtons.classList.add('hidden');
+                }
+                
+                // Fetch dashboard data
+                const response = await fetchData('dashboard');
+                
+                if (response && response.success) {
+                    // Update balance
+                    document.getElementById('currentBalance').textContent = formatCurrency(response.balance || 0);
+                    document.getElementById('lastUpdated').textContent = response.lastUpdated || '-';
+                    
+                    // Update recent transactions
+                    allTransactions = response.transactions || [];
+                    updateRecentTransactions();
+                    
+                    // Populate year filter dropdown
+                    populateYearFilter();
+                    
+                    // Show dashboard screen
+                    loginScreen.classList.add('hidden');
+                    dashboardScreen.classList.remove('hidden');
+                } else {
+                    showError("Gagal memuat data dashboard. Silakan coba lagi.");
+                }
+            } catch (error) {
+                console.error("Error showing dashboard:", error);
+                showError("Terjadi kesalahan saat memuat dashboard. Silakan coba lagi.");
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+        
+        // Handle login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginError = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                loginError.textContent = "Username dan password harus diisi";
+                loginError.classList.remove('hidden');
+                return;
+            }
+            
+            try {
+                loadingOverlay.classList.remove('hidden');
+                loginError.classList.add('hidden');
+                
+                const formData = new FormData();
+                formData.append('action', 'login');
+                formData.append('username', username);
+                formData.append('password', password);
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentUser = {
+                        username: username,
+                        role: data.role
+                    };
+                    
+                    // Save to session storage
+                    sessionStorage.setItem('kasUmumUser', JSON.stringify(currentUser));
+                    
+                    // Show dashboard
+                    showDashboard();
+                } else {
+                    loginError.textContent = data.message || "Username atau password salah";
+                    loginError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                loginError.textContent = "Terjadi kesalahan saat login. Silakan coba lagi.";
+                loginError.classList.remove('hidden');
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+        
+        // Handle logout
+        function handleLogout() {
+            // Clear session storage
+            sessionStorage.removeItem('kasUmumUser');
+            currentUser = null;
+            
+            // Show login screen
+            showLoginScreen();
+        }
+        
+        // Show transaction modal
+        function showTransactionModal(type) {
+            currentTransactionType = type;
+            
+            // Set modal title
+            const modalTitle = document.getElementById('modalTitle');
+            if (type === 'income') {
+                modalTitle.textContent = 'Tambah Pemasukan';
+            } else {
+                modalTitle.textContent = 'Tambah Pengeluaran';
+            }
+            
+            // Reset form
+            document.getElementById('transactionId').value = '';
+            document.getElementById('existingImage').value = '';
+            
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionDate').value = today;
+            
+            // Clear form fields
+            document.getElementById('transactionDescription').value = '';
+            document.getElementById('transactionAmount').value = '';
+            document.getElementById('transactionNotes').value = '';
+            document.getElementById('fileName').textContent = 'Tidak ada file dipilih';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('transactionImage').value = '';
+            
+            // Show modal
+            transactionModal.classList.remove('hidden');
+        }
+        
+        // Hide transaction modal
+        function hideTransactionModal() {
+            transactionModal.classList.add('hidden');
+        }
+        
+        // Show notification
+        function showNotification(message, isSuccess = true) {
+            notificationMessage.textContent = message;
+            
+            // Set notification color based on success/error
+            const notificationDiv = notification.querySelector('div');
+            if (isSuccess) {
+                notificationDiv.className = 'max-w-md mx-auto m-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md notification';
+                notificationDiv.querySelector('i').className = 'fas fa-check-circle text-green-500 mr-2';
+            } else {
+                notificationDiv.className = 'max-w-md mx-auto m-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md notification';
+                notificationDiv.querySelector('i').className = 'fas fa-exclamation-circle text-red-500 mr-2';
+            }
+            
+            // Show notification
+            notification.classList.remove('hidden');
+            
+            // Hide notification after 3.5 seconds
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3500);
+        }
+        
+        // Handle edit transaction
+        async function handleEditTransaction(transactionId) {
+            try {
+                loadingOverlay.classList.remove('hidden');
+                
+                // Find the transaction
+                const transaction = allTransactions.find(t => t.id === transactionId);
+                if (!transaction) {
+                    showNotification("Transaksi tidak ditemukan", false);
+                    return;
+                }
+                
+                // Set modal title
+                const modalTitle = document.getElementById('modalTitle');
+                if (transaction.income > 0) {
+                    modalTitle.textContent = 'Edit Pemasukan';
+                    currentTransactionType = 'income';
+                } else {
+                    modalTitle.textContent = 'Edit Pengeluaran';
+                    currentTransactionType = 'expense';
+                }
+                
+                // Set form values
+                document.getElementById('transactionId').value = transaction.id;
+                document.getElementById('transactionDate').value = transaction.date.split('T')[0];
+                document.getElementById('transactionDescription').value = transaction.description;
+                document.getElementById('transactionAmount').value = transaction.income > 0 ? transaction.income : transaction.expense;
+                document.getElementById('transactionNotes').value = transaction.notes || '';
+                
+                // Handle image
+                const fileName = document.getElementById('fileName');
+                const imagePreview = document.getElementById('imagePreview');
+                const existingImage = document.getElementById('existingImage');
+                
+                if (transaction.imageUrl) {
+                    fileName.textContent = 'Gambar sudah diupload';
+                    imagePreview.src = transaction.imageUrl;
+                    imagePreview.style.display = 'block';
+                    existingImage.value = transaction.imageUrl;
+                } else {
+                    fileName.textContent = 'Tidak ada gambar';
+                    imagePreview.style.display = 'none';
+                    existingImage.value = '';
+                }
+                
+                // Show modal
+                transactionModal.classList.remove('hidden');
+            } catch (error) {
+                console.error("Edit error:", error);
+                showNotification("Terjadi kesalahan saat memuat transaksi", false);
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+        
+        // Handle delete transaction
+        async function handleDeleteTransaction(transactionId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
+                return;
+            }
+            
+            try {
+                loadingOverlay.classList.remove('hidden');
+                
+                const formData = new FormData();
+                formData.append('action', 'deleteTransaction');
+                formData.append('transactionId', transactionId);
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Transaksi berhasil dihapus!', true);
+                    showDashboard(); // Refresh data
+                } else {
+                    showNotification(data.message || "Gagal menghapus transaksi", false);
+                }
+            } catch (error) {
+                console.error("Delete error:", error);
+                showNotification("Terjadi kesalahan saat menghapus transaksi", false);
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+        
+        // Handle transaction submit
+        async function handleTransactionSubmit(e) {
+            e.preventDefault();
+            
+            const transactionId = document.getElementById('transactionId').value;
+            const date = document.getElementById('transactionDate').value;
+            const description = document.getElementById('transactionDescription').value.trim();
+            const amount = document.getElementById('transactionAmount').value;
+            const notes = document.getElementById('transactionNotes').value.trim();
+            const imageFile = document.getElementById('transactionImage').files[0];
+            const existingImage = document.getElementById('existingImage').value;
+            
+            if (!date || !description || !amount || amount <= 0) {
+                alert('Mohon lengkapi semua field dengan benar');
+                return;
+            }
+            
+            try {
+                loadingOverlay.classList.remove('hidden');
+                hideTransactionModal();
+                
+                const formData = new FormData();
+                formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
+                formData.append('date', date);
+                formData.append('description', description);
+                formData.append('type', currentTransactionType);
+                formData.append('amount', amount);
+                formData.append('notes', notes);
+                
+                if (transactionId) {
+                    formData.append('transactionId', transactionId);
+                }
+                
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                } else if (existingImage) {
+                    formData.append('existingImage', existingImage);
+                }
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(transactionId ? 'Transaksi berhasil diperbarui!' : 'Transaksi berhasil disimpan!', true);
+                    showDashboard(); // Refresh data
+                } else {
+                    showNotification(data.message || (transactionId ? "Gagal memperbarui transaksi" : "Gagal menyimpan transaksi"), false);
+                }
+            } catch (error) {
+                console.error("Transaction error:", error);
+                showNotification("Terjadi kesalahan saat memproses transaksi", false);
+            } finally {
+                loadingOverlay.classList.add('hidden');
+                document.getElementById('transactionId').value = ''; // Clear transaction ID
+            }
+        }
+        
+        // Show recap modal
+        function showRecapModal() {
+            // Reset filters
+            resetFilters();
+            
+            // Show modal
+            recapModal.classList.remove('hidden');
+        }
+        
+        // Hide recap modal
+        function hideRecapModal() {
+            recapModal.classList.add('hidden');
+        }
+        
+        // Update recent transactions
+        function updateRecentTransactions() {
+            const container = document.getElementById('recentTransactions');
+            
+            if (!allTransactions || allTransactions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-receipt text-2xl mb-2"></i>
+                        <p>Belum ada transaksi</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Get the 3 most recent transactions
+            const recentTransactions = allTransactions.slice(0, 3);
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Add transactions
+            recentTransactions.forEach(transaction => {
+                const isIncome = transaction.income > 0;
+                const amount = isIncome ? transaction.income : transaction.expense;
+                
+                const transactionEl = document.createElement('div');
+                transactionEl.className = 'border-b border-gray-200 pb-3';
+                transactionEl.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-medium">${transaction.description}</h3>
+                            <p class="text-sm text-gray-500">${formatDate(transaction.date)}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="${isIncome ? 'text-green-600' : 'text-red-600'} font-medium">
+                                ${isIncome ? '+' : '-'} ${formatCurrency(amount)}
+                            </span>
+                        </div>
+                    </div>
+                    ${transaction.notes ? `<p class="text-sm text-gray-600 mt-1">${transaction.notes}</p>` : ''}
+                    ${transaction.imageUrl ? `
+                        <div class="mt-2">
+                            <button class="view-image-btn text-blue-500 text-sm" data-image="${transaction.imageUrl}">
+                                <i class="fas fa-image mr-1"></i> Lihat Gambar
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                
+                container.appendChild(transactionEl);
+            });
+        }
+        
+        // Update recap table
+        function updateRecapTable(transactions) {
+            const tableBody = document.getElementById('recapTableBody');
+            
+            if (!transactions || transactions.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-gray-500">
+                            Tidak ada transaksi yang sesuai dengan filter
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Clear table body
+            tableBody.innerHTML = '';
+            
+            // Add transactions
+            transactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                // Basic transaction info
+                row.innerHTML = `
+                    <td class="py-2 px-4 border-b border-gray-200">${formatDate(transaction.date)}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">${transaction.description}</td>
+                    <td class="py-2 px-4 border-b border-gray-200 ${transaction.income > 0 ? 'text-green-600' : ''}">${transaction.income > 0 ? formatCurrency(transaction.income) : '-'}</td>
+                    <td class="py-2 px-4 border-b border-gray-200 ${transaction.expense > 0 ? 'text-red-600' : ''}">${transaction.expense > 0 ? formatCurrency(transaction.expense) : '-'}</td>
+                    <td class="py-2 px-4 border-b border-gray-200 font-medium">${formatCurrency(transaction.balance)}</td>
+                    <td class="py-2 px-4 border-b border-gray-200 text-gray-600">${transaction.notes || '-'}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">
+                        ${transaction.imageUrl ? `
+                            <button class="view-image-btn text-blue-500 text-sm" data-image="${transaction.imageUrl}">
+                                <i class="fas fa-image"></i>
+                            </button>
+                        ` : '-'}
+                    </td>
+                `;
+                
+                // Add action buttons if user is Bendahara
+                if (currentUser && currentUser.role === 'Bendahara') {
+                    row.innerHTML += `
+                        <td class="py-2 px-4 border-b border-gray-200">
+                            <button class="edit-btn text-blue-500 hover:text-blue-700 mr-2" data-id="${transaction.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-btn text-red-500 hover:text-red-700" data-id="${transaction.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                } else {
+                    row.innerHTML += `<td class="py-2 px-4 border-b border-gray-200"></td>`;
+                }
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Fetch data from API
+        async function fetchData(action) {
+            try {
+                const formData = new FormData();
+                formData.append('action', action);
+                
+                if (currentUser) {
+                    formData.append('username', currentUser.username);
+                    formData.append('role', currentUser.role);
+                }
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${action} data:`, error);
+                throw error;
+            }
+        }
+        
+        // Show error message
+        function showError(message) {
+            showNotification(message, false);
+        }
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+    </script>
+</body>
+</html>
