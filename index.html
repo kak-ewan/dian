@@ -5,255 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAS UMUM</title>
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-        }
-        .loader {
-            border-top-color: #3498db;
-            -webkit-animation: spinner 1.5s linear infinite;
-            animation: spinner 1.5s linear infinite;
-        }
-        @-webkit-keyframes spinner {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
-        }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .fade-in {
-            animation: fadeIn 0.5s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .slide-in {
-            animation: slideIn 0.5s;
-        }
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .notification {
-            animation: slideInNotification 0.3s, fadeOutNotification 0.3s 3s forwards;
-            transform-origin: top center;
-        }
-        @keyframes slideInNotification {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes fadeOutNotification {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(-100%); opacity: 0; }
-        }
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .logo-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .filter-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .filter-dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 0.375rem;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-        .filter-dropdown-content.show {
-            display: block;
-        }
-        .filter-dropdown-item {
-            padding: 8px 12px;
-            text-decoration: none;
-            display: block;
-            cursor: pointer;
-        }
-        .filter-dropdown-item:hover {
-            background-color: #f1f5f9;
-        }
-        .filter-dropdown-item.active {
-            background-color: #e2e8f0;
-            font-weight: 500;
-        }
-        .filter-badge {
-            display: inline-flex;
-            align-items: center;
-            background-color: #e2e8f0;
-            border-radius: 9999px;
-            padding: 0.25rem 0.75rem;
-            font-size: 0.75rem;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .filter-badge-close {
-            margin-left: 0.5rem;
-            cursor: pointer;
-        }
-        .image-preview {
-            max-width: 200px;
-            max-height: 200px;
-            margin-top: 10px;
-            display: none;
-        }
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-        .file-input-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-        }
-        .file-input-button {
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            padding: 0.5rem 1rem;
-            background-color: #f3f4f6;
-            cursor: pointer;
-        }
-        .file-input-button:hover {
-            background-color: #e5e7eb;
-        }
-        .transaction-type-income {
-            color: #10b981;
-        }
-        .transaction-type-expense {
-            color: #ef4444;
-        }
-        .balance-positive {
-            color: #10b981;
-        }
-        .balance-negative {
-            color: #ef4444;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body class="min-h-screen">
-    <div id="app">
-        <!-- Notification -->
-        <div id="notification" class="fixed top-0 left-0 right-0 z-50 hidden">
-            <div class="max-w-md mx-auto m-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md notification">
-                <div class="flex items-center">
-                    <div class="py-1"><i class="fas fa-check-circle text-green-500 mr-2"></i></div>
-                    <div id="notificationMessage">Transaksi berhasil disimpan!</div>
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen">
+        <!-- Pre-Login Page -->
+        <div id="pre-login" class="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
+                <div class="flex flex-col items-center">
+                    <img id="logo" src="" alt="Logo Sekolah" class="h-24 w-auto mb-4">
+                    <h2 class="mt-2 text-center text-3xl font-extrabold text-gray-900">KAS UMUM</h2>
+                    <p id="description" class="mt-2 text-center text-sm text-gray-600"></p>
                 </div>
-            </div>
-        </div>
-
-        <!-- Loading Overlay -->
-        <div id="loadingOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white p-5 rounded-lg shadow-lg text-center">
-                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4 mx-auto"></div>
-                <h2 class="text-xl font-semibold text-gray-700">Memuat...</h2>
-                <p class="text-gray-600">Mohon tunggu sebentar</p>
-            </div>
-        </div>
-
-        <!-- Login Screen -->
-        <div id="loginScreen" class="min-h-screen flex flex-col items-center justify-center p-4">
-            <div class="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden fade-in">
-                <div class="p-6 text-center">
-                    <div id="schoolLogo" class="mx-auto mb-4 w-24 h-24 logo-container">
-                        <svg class="w-16 h-16 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 14l9-5-9-5-9 5 9 5z"/>
-                            <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z"/>
-                            <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
-                        </svg>
-                    </div>
-                    <h1 id="appTitle" class="text-2xl font-bold text-gray-800 mb-2">KAS UMUM</h1>
-                    <p id="appDescription" class="text-gray-600 mb-6">Sistem Pencatatan Keuangan Sekolah</p>
-                    <div class="mb-4">
-                        <label for="username" class="block text-gray-700 text-sm font-bold mb-2 text-left">Username</label>
-                        <input type="text" id="username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan username">
-                    </div>
-                    <div class="mb-6">
-                        <label for="password" class="block text-gray-700 text-sm font-bold mb-2 text-left">Password</label>
-                        <input type="password" id="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan password">
-                    </div>
-                    <div id="loginError" class="text-red-500 text-sm mb-4 hidden"></div>
-                    <button id="loginBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
-                        Masuk
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Dashboard -->
-        <div id="dashboardScreen" class="hidden min-h-screen">
-            <!-- Header -->
-            <header class="bg-blue-600 text-white shadow-md">
-                <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                    <div class="flex items-center">
-                        <div id="headerLogo" class="mr-3 w-10 h-10 logo-container">
-                            <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 14l9-5-9-5-9 5 9 5z"/>
-                                <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z"/>
-                                <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
-                            </svg>
+                <div class="mt-8">
+                    <div class="rounded-md shadow-sm">
+                        <div>
+                            <label for="username" class="sr-only">Username</label>
+                            <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Username">
                         </div>
-                        <h1 id="headerTitle" class="text-xl font-bold">KAS UMUM</h1>
+                        <div>
+                            <label for="password" class="sr-only">Password</label>
+                            <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Password">
+                        </div>
                     </div>
-                    <div class="flex items-center">
-                        <span id="userRole" class="mr-3 hidden md:inline"></span>
-                        <button id="logoutBtn" class="bg-red-500 hover:bg-red-700 text-white text-sm py-1 px-3 rounded">
-                            Keluar
+
+                    <div class="mt-6">
+                        <button onclick="login()" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Masuk
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard (Hidden until login) -->
+        <div id="dashboard" class="hidden">
+            <!-- Header -->
+            <header class="bg-white shadow">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-gray-900">KAS UMUM</h1>
+                    <button onclick="logout()" class="text-sm text-blue-600 hover:text-blue-800">Keluar</button>
                 </div>
             </header>
 
             <!-- Main Content -->
-            <main class="container mx-auto px-4 py-6">
-                <!-- Balance Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 text-center slide-in">
-                    <h2 class="text-gray-600 text-lg mb-1">Saldo Saat Ini</h2>
-                    <div id="currentBalance" class="text-4xl md:text-5xl font-bold balance-positive">Rp 0</div>
-                    <p class="text-gray-500 text-sm">Terakhir diperbarui: <span id="lastUpdated">-</span></p>
-                </div>
+            <main>
+                <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                    <!-- Current Balance -->
+                    <div class="px-4 py-6 sm:px-0">
+                        <div class="border-4 border-dashed border-gray-200 rounded-lg p-8 text-center">
+                            <h2 class="text-lg font-medium text-gray-500">SALDO SAAT INI</h2>
+                            <p id="current-balance" class="mt-2 text-5xl font-semibold text-gray-900">Rp0</p>
+                        </div>
+                    </div>
 
-                <!-- Action Buttons (Only for Bendahara) -->
-                <div id="actionButtons" class="grid grid-cols-2 gap-4 mb-6 slide-in" style="animation-delay: 0.1s">
-                    <button id="incomeBtn" class="bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg shadow flex items-center justify-center">
-                        <i class="fas fa-plus-circle mr-2"></i>
-                        <span>Pemasukan</span>
-                    </button>
-                    <button id="expenseBtn" class="bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg shadow flex items-center justify-center">
-                        <i class="fas fa-minus-circle mr-2"></i>
-                        <span>Pengeluaran</span>
-                    </button>
-                </div>
-
-                <!-- Recent Transactions -->
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 slide-in" style="animation-delay: 0.2s">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-800">Transaksi Terakhir</h2>
-                        <button id="viewAllBtn" class="text-blue-500 hover:text-blue-700 text-sm">
-                            Lihat Rekap
+                    <!-- Action Buttons -->
+                    <div id="action-buttons" class="mt-5 flex justify-center space-x-4">
+                        <button onclick="showTransactionForm('income')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <i class="fas fa-plus mr-2"></i> Pemasukan
+                        </button>
+                        <button onclick="showTransactionForm('expense')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-minus mr-2"></i> Pengeluaran
+                        </button>
+                        <button onclick="showReport()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-file-alt mr-2"></i> Rekap
                         </button>
                     </div>
-                    <div id="recentTransactions" class="space-y-3">
-                        <div class="text-center py-8 text-gray-500">
-                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
-                            <p>Memuat transaksi...</p>
+
+                    <!-- Recent Transactions -->
+                    <div class="mt-8">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">3 TRANSAKSI TERAKHIR</h3>
+                        <div id="recent-transactions" class="mt-4 grid gap-5 grid-cols-1 sm:grid-cols-3">
+                            <!-- Transactions will be loaded here -->
                         </div>
                     </div>
                 </div>
@@ -261,1217 +84,670 @@
         </div>
 
         <!-- Transaction Form Modal -->
-        <div id="transactionModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-40 hidden">
-            <div class="bg-white rounded-lg shadow-lg max-w-md w-full mx-4 fade-in">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 id="modalTitle" class="text-xl font-semibold text-gray-800">Tambah Transaksi</h2>
-                        <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <form id="transactionForm">
-                        <input type="hidden" id="transactionId" value="">
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionDate">
-                                Tanggal
-                            </label>
-                            <input type="date" id="transactionDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionDescription">
-                                Uraian
-                            </label>
-                            <input type="text" id="transactionDescription" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan uraian transaksi" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionAmount">
-                                Jumlah (Rp)
-                            </label>
-                            <input type="number" id="transactionAmount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="0" min="1" step="1" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionImage">
-                                Foto Barang/Bukti
-                            </label>
-                            <div class="file-input-wrapper">
-                                <button type="button" class="file-input-button">
-                                    <i class="fas fa-upload mr-2"></i>Pilih File
-                                </button>
-                                <input type="file" id="transactionImage" accept="image/*" class="hidden">
-                            </div>
-                            <span id="fileName" class="ml-2 text-sm text-gray-600">Tidak ada file dipilih</span>
-                            <img id="imagePreview" class="image-preview rounded" src="" alt="Preview gambar">
-                            <input type="hidden" id="existingImage" value="">
-                        </div>
-                        <div class="mb-6">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="transactionNotes">
-                                Keterangan
-                            </label>
-                            <textarea id="transactionNotes" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" rows="3" placeholder="Masukkan keterangan (opsional)"></textarea>
-                        </div>
-                        <div class="flex justify-end">
-                            <button type="button" id="cancelTransactionBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
-                                Batal
-                            </button>
-                            <button type="submit" id="submitTransactionBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Simpan
-                            </button>
-                        </div>
-                    </form>
+        <div id="transaction-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Recap Modal -->
-        <div id="recapModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-40 hidden">
-            <div class="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 fade-in" style="max-height: 90vh;">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-800">Rekap Transaksi</h2>
-                        <button id="closeRecapBtn" class="text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-times"></i>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div>
+                        <h3 id="transaction-title" class="text-lg leading-6 font-medium text-gray-900"></h3>
+                        <div class="mt-5">
+                            <form id="transaction-form" class="space-y-4">
+                                <input type="hidden" id="transaction-type">
+                                <div>
+                                    <label for="transaction-date" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                                    <input type="date" id="transaction-date" name="date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="transaction-description" class="block text-sm font-medium text-gray-700">Uraian</label>
+                                    <input type="text" id="transaction-description" name="description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div id="amount-field">
+                                    <!-- Amount field will be dynamically set based on transaction type -->
+                                </div>
+                                <div>
+                                    <label for="transaction-notes" class="block text-sm font-medium text-gray-700">Keterangan</label>
+                                    <textarea id="transaction-notes" name="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                                </div>
+                                <div>
+                                    <label for="transaction-receipt" class="block text-sm font-medium text-gray-700">Upload Foto Barang (Opsional)</label>
+                                    <input type="file" id="transaction-receipt" name="receipt" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                        <button onclick="submitTransaction()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
+                            Simpan
                         </button>
-                    </div>
-                    
-                    <!-- Filter Section -->
-                    <div class="mb-4">
-                        <div class="flex flex-wrap items-center mb-2">
-                            <span class="text-gray-700 font-medium mr-2">Filter:</span>
-                            
-                            <!-- Type Filter -->
-                            <div class="filter-dropdown mr-2 mb-2">
-                                <button id="typeFilterBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm flex items-center">
-                                    <span>Jenis</span>
-                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                                </button>
-                                <div id="typeFilterDropdown" class="filter-dropdown-content">
-                                    <div class="filter-dropdown-item" data-value="all">Semua</div>
-                                    <div class="filter-dropdown-item" data-value="income">Pemasukan</div>
-                                    <div class="filter-dropdown-item" data-value="expense">Pengeluaran</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Month Filter -->
-                            <div class="filter-dropdown mr-2 mb-2">
-                                <button id="monthFilterBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm flex items-center">
-                                    <span>Bulan</span>
-                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                                </button>
-                                <div id="monthFilterDropdown" class="filter-dropdown-content">
-                                    <div class="filter-dropdown-item" data-value="all">Semua Bulan</div>
-                                    <div class="filter-dropdown-item" data-value="1">Januari</div>
-                                    <div class="filter-dropdown-item" data-value="2">Februari</div>
-                                    <div class="filter-dropdown-item" data-value="3">Maret</div>
-                                    <div class="filter-dropdown-item" data-value="4">April</div>
-                                    <div class="filter-dropdown-item" data-value="5">Mei</div>
-                                    <div class="filter-dropdown-item" data-value="6">Juni</div>
-                                    <div class="filter-dropdown-item" data-value="7">Juli</div>
-                                    <div class="filter-dropdown-item" data-value="8">Agustus</div>
-                                    <div class="filter-dropdown-item" data-value="9">September</div>
-                                    <div class="filter-dropdown-item" data-value="10">Oktober</div>
-                                    <div class="filter-dropdown-item" data-value="11">November</div>
-                                    <div class="filter-dropdown-item" data-value="12">Desember</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Year Filter -->
-                            <div class="filter-dropdown mr-2 mb-2">
-                                <button id="yearFilterBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm flex items-center">
-                                    <span>Tahun</span>
-                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                                </button>
-                                <div id="yearFilterDropdown" class="filter-dropdown-content">
-                                    <div class="filter-dropdown-item" data-value="all">Semua Tahun</div>
-                                    <!-- Years will be populated dynamically -->
-                                </div>
-                            </div>
-                            
-                            <!-- Reset Filter Button -->
-                            <button id="resetFilterBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm mb-2">
-                                <i class="fas fa-sync-alt mr-1"></i> Reset
-                            </button>
-                        </div>
-                        
-                        <!-- Active Filters Display -->
-                        <div id="activeFilters" class="flex flex-wrap mt-2"></div>
-                        
-                        <!-- Summary Section -->
-                        <div class="grid grid-cols-3 gap-2 mt-3">
-                            <div class="bg-blue-50 p-2 rounded text-center">
-                                <div class="text-sm text-gray-600">Total Transaksi</div>
-                                <div id="totalTransactions" class="font-bold text-blue-600">0</div>
-                            </div>
-                            <div class="bg-green-50 p-2 rounded text-center">
-                                <div class="text-sm text-gray-600">Total Pemasukan</div>
-                                <div id="totalIncome" class="font-bold text-green-600">Rp 0</div>
-                            </div>
-                            <div class="bg-red-50 p-2 rounded text-center">
-                                <div class="text-sm text-gray-600">Total Pengeluaran</div>
-                                <div id="totalExpense" class="font-bold text-red-600">Rp 0</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Transactions Table -->
-                    <div class="overflow-auto" style="max-height: 50vh;">
-                        <table class="min-w-full bg-white">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Tanggal
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Uraian
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Pemasukan
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Pengeluaran
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Saldo
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Keterangan
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Gambar
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Aksi
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="recapTableBody">
-                                <tr>
-                                    <td colspan="8" class="text-center py-4 text-gray-500">
-                                        <i class="fas fa-spinner fa-spin mr-2"></i>Memuat data...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <button onclick="hideTransactionForm()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+                            Batal
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Image Preview Modal -->
-        <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden">
-            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4">
-                <div class="p-4 flex justify-between items-center border-b">
-                    <h3 class="text-lg font-semibold">Preview Gambar</h3>
-                    <button id="closeImageModalBtn" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times"></i>
-                    </button>
+        <!-- Report Modal -->
+        <div id="report-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
                 </div>
-                <div class="p-4 flex justify-center">
-                    <img id="modalImagePreview" src="" alt="Preview gambar" class="max-h-[70vh] max-w-full">
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6">
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">REKAP TRANSAKSI</h3>
+                        <div class="mt-5">
+                            <div class="flex justify-between mb-4">
+                                <div>
+                                    <label for="report-start-date" class="block text-sm font-medium text-gray-700">Dari Tanggal</label>
+                                    <input type="date" id="report-start-date" class="mt-1 block border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="report-end-date" class="block text-sm font-medium text-gray-700">Sampai Tanggal</label>
+                                    <input type="date" id="report-end-date" class="mt-1 block border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <button onclick="loadReport()" class="self-end inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <i class="fas fa-filter mr-2"></i> Filter
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uraian</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pemasukan</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengeluaran</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="report-table-body" class="bg-white divide-y divide-gray-200">
+                                        <!-- Report data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 sm:mt-6">
+                        <button onclick="hideReport()" type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Transaction Modal -->
+        <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit Transaksi</h3>
+                        <div class="mt-5">
+                            <form id="edit-form" class="space-y-4">
+                                <input type="hidden" id="edit-id">
+                                <div>
+                                    <label for="edit-date" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                                    <input type="date" id="edit-date" name="date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="edit-description" class="block text-sm font-medium text-gray-700">Uraian</label>
+                                    <input type="text" id="edit-description" name="description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="edit-income" class="block text-sm font-medium text-gray-700">Pemasukan</label>
+                                    <input type="number" id="edit-income" name="income" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="edit-expense" class="block text-sm font-medium text-gray-700">Pengeluaran</label>
+                                    <input type="number" id="edit-expense" name="expense" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="edit-notes" class="block text-sm font-medium text-gray-700">Keterangan</label>
+                                    <textarea id="edit-notes" name="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                                </div>
+                                <div id="edit-receipt-container">
+                                    <!-- Receipt image will be shown here if exists -->
+                                </div>
+                                <div>
+                                    <label for="edit-receipt" class="block text-sm font-medium text-gray-700">Ganti Foto Barang (Opsional)</label>
+                                    <input type="file" id="edit-receipt" name="receipt" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                        <button onclick="updateTransaction()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
+                            Simpan Perubahan
+                        </button>
+                        <button onclick="hideEditForm()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+                            Batal
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // API Endpoint via Cloudflare Worker
-        const CLOUDFLARE_WORKER_URL = 'https://silent-art-c930.irwantaufiqurrahman59.workers.dev/';
-        const API_URL = CLOUDFLARE_WORKER_URL;
-        
         // Global variables
         let currentUser = null;
-        let allTransactions = [];
-        let currentTransactionType = '';
-        let appConfig = {
-            title: 'KAS UMUM',
-            description: 'Sistem Pencatatan Keuangan Sekolah',
-            logoUrl: ''
+        let appData = {
+            logo: '',
+            description: '',
+            users: [],
+            transactions: [],
+            currentBalance: 0
         };
-        
-        // Filter variables
-        let activeFilters = {
-            type: 'all',
-            month: 'all',
-            year: 'all'
-        };
-        
-        // DOM Elements
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const loginScreen = document.getElementById('loginScreen');
-        const dashboardScreen = document.getElementById('dashboardScreen');
-        const transactionModal = document.getElementById('transactionModal');
-        const recapModal = document.getElementById('recapModal');
-        const imageModal = document.getElementById('imageModal');
-        const notification = document.getElementById('notification');
-        const notificationMessage = document.getElementById('notificationMessage');
-        
-        // Initialize the application
+
+        // Endpoint configuration
+        const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxKy9CplLBPAZvLNgQ-A59G2bzj0xQ14dx9I4rFkMpqzNt1ow8cFr2QMobP9Q8NjiYWpA/exec';
+
+        // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            initApp();
-            setupEventListeners();
+            // Set today's date as default for transaction date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transaction-date').value = today;
+            
+            // Load initial data
+            loadInitialData();
         });
-        
-        // Initialize the application
-        async function initApp() {
+
+        // Load initial data (logo, description, users)
+        async function loadInitialData() {
             try {
-                // Fetch initial data (school info, etc.)
-                const response = await fetchData('init');
+                const response = await fetch(API_ENDPOINT + '?action=getInitialData');
+                const data = await response.json();
                 
-                if (response && response.success) {
-                    // Set app config
-                    if (response.config) {
-                        appConfig = {
-                            title: response.config.title || 'KAS UMUM',
-                            description: response.config.description || 'Sistem Pencatatan Keuangan Sekolah',
-                            logoUrl: response.config.logoUrl || ''
-                        };
+                if (data.success) {
+                    appData.logo = data.logo || '';
+                    appData.description = data.description || '';
+                    appData.users = data.users || [];
+                    
+                    // Update UI
+                    if (appData.logo) {
+                        document.getElementById('logo').src = appData.logo;
                     }
-                    
-                    // Update document title
-                    document.title = appConfig.title;
-                    
-                    // Set app title and description
-                    document.getElementById('appTitle').textContent = appConfig.title;
-                    document.getElementById('headerTitle').textContent = appConfig.title;
-                    document.getElementById('appDescription').textContent = appConfig.description;
-                    
-                    // Set school logo
-                    updateLogo();
-                    
-                    // Check if user is already logged in (from session storage)
-                    const savedUser = sessionStorage.getItem('kasUmumUser');
-                    if (savedUser) {
-                        currentUser = JSON.parse(savedUser);
-                        showDashboard();
-                    } else {
-                        showLoginScreen();
+                    if (appData.description) {
+                        document.getElementById('description').textContent = appData.description;
                     }
                 } else {
-                    showError("Gagal memuat data awal. Silakan muat ulang halaman.");
+                    alert('Gagal memuat data awal: ' + data.message);
                 }
             } catch (error) {
-                console.error("Error initializing app:", error);
-                showError("Terjadi kesalahan saat memuat aplikasi. Silakan coba lagi.");
+                console.error('Error loading initial data:', error);
+                alert('Terjadi kesalahan saat memuat data awal');
             }
         }
-        
-        // Update logo in all places
-        function updateLogo() {
-            const logoContainers = [
-                document.getElementById('schoolLogo'),
-                document.getElementById('headerLogo')
-            ];
-            
-            logoContainers.forEach(container => {
-                // Clear previous content
-                container.innerHTML = '';
-                
-                if (appConfig.logoUrl && appConfig.logoUrl.trim() !== '') {
-                    // Create image element
-                    const img = document.createElement('img');
-                    img.src = appConfig.logoUrl;
-                    img.alt = appConfig.title || 'Logo';
-                    img.className = 'max-h-full max-w-full';
-                    img.onerror = function() {
-                        // If image fails to load, use default SVG
-                        useDefaultLogo(container);
-                    };
-                    
-                    // Add image to container
-                    container.appendChild(img);
-                } else {
-                    useDefaultLogo(container);
-                }
-            });
-        }
-        
-        // Use default SVG logo when no image URL is available or loading fails
-        function useDefaultLogo(container) {
-            const isHeader = container.id === 'headerLogo';
-            const size = isHeader ? 'w-6 h-6' : 'w-16 h-16';
-            
-            container.innerHTML = `<svg class="${size}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z"/><path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>`;
-        }
-        
-        // Setup event listeners
-        function setupEventListeners() {
-            // Login form
-            document.getElementById('loginBtn').addEventListener('click', handleLogin);
-            
-            // Enter key for login
-            document.getElementById('password').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    handleLogin(e);
-                }
-            });
-            
-            // Logout button
-            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-            
-            // Transaction buttons (only for Bendahara)
-            document.getElementById('incomeBtn').addEventListener('click', () => showTransactionModal('income'));
-            document.getElementById('expenseBtn').addEventListener('click', () => showTransactionModal('expense'));
-            
-            // View all transactions button
-            document.getElementById('viewAllBtn').addEventListener('click', showRecapModal);
-            
-            // Transaction modal
-            document.getElementById('closeModalBtn').addEventListener('click', hideTransactionModal);
-            document.getElementById('cancelTransactionBtn').addEventListener('click', hideTransactionModal);
-            document.getElementById('transactionForm').addEventListener('submit', handleTransactionSubmit);
-            
-            // Image upload
-            document.getElementById('transactionImage').addEventListener('change', handleImageUpload);
-            
-            // Recap modal
-            document.getElementById('closeRecapBtn').addEventListener('click', hideRecapModal);
-            document.getElementById('resetFilterBtn').addEventListener('click', resetFilters);
-            
-            // Image modal
-            document.getElementById('closeImageModalBtn').addEventListener('click', hideImageModal);
-            
-            // Filter dropdowns
-            setupFilterDropdowns();
-            
-            // Edit and delete buttons (delegated events)
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.edit-btn')) {
-                    const transactionId = e.target.closest('.edit-btn').getAttribute('data-id');
-                    handleEditTransaction(transactionId);
-                }
-                
-                if (e.target.closest('.delete-btn')) {
-                    const transactionId = e.target.closest('.delete-btn').getAttribute('data-id');
-                    handleDeleteTransaction(transactionId);
-                }
-                
-                if (e.target.closest('.view-image-btn')) {
-                    const imageUrl = e.target.closest('.view-image-btn').getAttribute('data-image');
-                    showImageModal(imageUrl);
-                }
-            });
-        }
-        
-        // Handle image upload
-        function handleImageUpload(e) {
-            const file = e.target.files[0];
-            const fileName = document.getElementById('fileName');
-            const imagePreview = document.getElementById('imagePreview');
-            
-            if (file) {
-                fileName.textContent = file.name;
-                
-                // Show preview if it's an image
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        imagePreview.src = event.target.result;
-                        imagePreview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    imagePreview.style.display = 'none';
-                }
-            } else {
-                fileName.textContent = 'Tidak ada file dipilih';
-                imagePreview.style.display = 'none';
-            }
-        }
-        
-        // Show image modal
-        function showImageModal(imageUrl) {
-            if (!imageUrl) return;
-            
-            const modalImage = document.getElementById('modalImagePreview');
-            modalImage.src = `${API_URL}?image=${imageUrl}`;
-            imageModal.classList.remove('hidden');
-        }
-        
-        // Hide image modal
-        function hideImageModal() {
-            imageModal.classList.add('hidden');
-        }
-        
-        // Setup filter dropdowns
-        function setupFilterDropdowns() {
-            // Type filter
-            document.getElementById('typeFilterBtn').addEventListener('click', function() {
-                toggleDropdown('typeFilterDropdown');
-            });
-            
-            // Month filter
-            document.getElementById('monthFilterBtn').addEventListener('click', function() {
-                toggleDropdown('monthFilterDropdown');
-            });
-            
-            // Year filter
-            document.getElementById('yearFilterBtn').addEventListener('click', function() {
-                toggleDropdown('yearFilterDropdown');
-            });
-            
-            // Add click event listeners to dropdown items
-            document.querySelectorAll('.filter-dropdown-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    const dropdown = this.closest('.filter-dropdown-content');
-                    
-                    if (dropdown.id === 'typeFilterDropdown') {
-                        setFilter('type', value);
-                    } else if (dropdown.id === 'monthFilterDropdown') {
-                        setFilter('month', value);
-                    } else if (dropdown.id === 'yearFilterDropdown') {
-                        setFilter('year', value);
-                    }
-                    
-                    // Hide dropdown
-                    dropdown.classList.remove('show');
-                });
-            });
-            
-            // Close dropdowns when clicking outside
-            document.addEventListener('click', function(event) {
-                const dropdowns = document.querySelectorAll('.filter-dropdown-content');
-                dropdowns.forEach(dropdown => {
-                    const button = document.getElementById(dropdown.id.replace('Dropdown', 'Btn'));
-                    if (!button.contains(event.target)) {
-                        dropdown.classList.remove('show');
-                    }
-                });
-            });
-        }
-        
-        // Toggle dropdown visibility
-        function toggleDropdown(dropdownId) {
-            const dropdown = document.getElementById(dropdownId);
-            
-            // Close all other dropdowns
-            document.querySelectorAll('.filter-dropdown-content').forEach(el => {
-                if (el.id !== dropdownId) {
-                    el.classList.remove('show');
-                }
-            });
-            
-            // Toggle this dropdown
-            dropdown.classList.toggle('show');
-            
-            // Prevent event from bubbling up
-            event.stopPropagation();
-        }
-        
-        // Set filter and update display
-        function setFilter(filterType, value) {
-            activeFilters[filterType] = value;
-            updateActiveFiltersDisplay();
-            applyFilters();
-        }
-        
-        // Reset all filters
-        function resetFilters() {
-            activeFilters = {
-                type: 'all',
-                month: 'all',
-                year: 'all'
-            };
-            
-            updateActiveFiltersDisplay();
-            applyFilters();
-        }
-        
-        // Update active filters display
-        function updateActiveFiltersDisplay() {
-            const container = document.getElementById('activeFilters');
-            container.innerHTML = '';
-            
-            // Add filter badges
-            if (activeFilters.type !== 'all') {
-                addFilterBadge('type', getTypeLabel(activeFilters.type));
-            }
-            
-            if (activeFilters.month !== 'all') {
-                addFilterBadge('month', getMonthLabel(activeFilters.month));
-            }
-            
-            if (activeFilters.year !== 'all') {
-                addFilterBadge('year', activeFilters.year);
-            }
-            
-            // Update dropdown items to show active state
-            updateDropdownActiveStates();
-        }
-        
-        // Add filter badge
-        function addFilterBadge(filterType, label) {
-            const container = document.getElementById('activeFilters');
-            
-            const badge = document.createElement('div');
-            badge.className = 'filter-badge';
-            badge.innerHTML = `
-                ${label}
-                <span class="filter-badge-close" data-filter="${filterType}">
-                    <i class="fas fa-times"></i>
-                </span>
-            `;
-            
-            // Add click event to remove filter
-            badge.querySelector('.filter-badge-close').addEventListener('click', function() {
-                const filterToRemove = this.getAttribute('data-filter');
-                activeFilters[filterToRemove] = 'all';
-                updateActiveFiltersDisplay();
-                applyFilters();
-            });
-            
-            container.appendChild(badge);
-        }
-        
-        // Update dropdown items to show active state
-        function updateDropdownActiveStates() {
-            // Type filter
-            document.querySelectorAll('#typeFilterDropdown .filter-dropdown-item').forEach(item => {
-                if (item.getAttribute('data-value') === activeFilters.type) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-            
-            // Month filter
-            document.querySelectorAll('#monthFilterDropdown .filter-dropdown-item').forEach(item => {
-                if (item.getAttribute('data-value') === activeFilters.month) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-            
-            // Year filter
-            document.querySelectorAll('#yearFilterDropdown .filter-dropdown-item').forEach(item => {
-                if (item.getAttribute('data-value') === activeFilters.year) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        }
-        
-        // Get type label
-        function getTypeLabel(type) {
-            switch (type) {
-                case 'income': return 'Pemasukan';
-                case 'expense': return 'Pengeluaran';
-                default: return 'Semua';
-            }
-        }
-        
-        // Get month label
-        function getMonthLabel(month) {
-            const months = [
-                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-            ];
-            
-            return months[parseInt(month) - 1] || 'Semua Bulan';
-        }
-        
-        // Apply filters to transactions
-        function applyFilters() {
-            let filteredTransactions = [...allTransactions];
-            
-            // Filter by type
-            if (activeFilters.type === 'income') {
-                filteredTransactions = filteredTransactions.filter(t => t.income > 0);
-            } else if (activeFilters.type === 'expense') {
-                filteredTransactions = filteredTransactions.filter(t => t.expense > 0);
-            }
-            
-            // Filter by month
-            if (activeFilters.month !== 'all') {
-                const month = parseInt(activeFilters.month);
-                filteredTransactions = filteredTransactions.filter(t => {
-                    const date = new Date(t.date);
-                    return date.getMonth() + 1 === month;
-                });
-            }
-            
-            // Filter by year
-            if (activeFilters.year !== 'all') {
-                const year = parseInt(activeFilters.year);
-                filteredTransactions = filteredTransactions.filter(t => {
-                    const date = new Date(t.date);
-                    return date.getFullYear() === year;
-                });
-            }
-            
-            // Update recap table with filtered transactions
-            updateRecapTable(filteredTransactions);
-            
-            // Update summary statistics
-            updateSummaryStatistics(filteredTransactions);
-        }
-        
-        // Update summary statistics
-        function updateSummaryStatistics(transactions) {
-            let totalIncome = 0;
-            let totalExpense = 0;
-            
-            transactions.forEach(transaction => {
-                if (transaction.income > 0) {
-                    totalIncome += parseFloat(transaction.income);
-                }
-                if (transaction.expense > 0) {
-                    totalExpense += parseFloat(transaction.expense);
-                }
-            });
-            
-            document.getElementById('totalTransactions').textContent = transactions.length;
-            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
-            document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
-        }
-        
-        // Populate year filter dropdown
-        function populateYearFilter() {
-            const yearDropdown = document.getElementById('yearFilterDropdown');
-            const years = new Set();
-            
-            // Extract unique years from transactions
-            allTransactions.forEach(transaction => {
-                const date = new Date(transaction.date);
-                years.add(date.getFullYear());
-            });
-            
-            // Sort years in descending order
-            const sortedYears = Array.from(years).sort((a, b) => b - a);
-            
-            // Clear existing items except "All Years"
-            const allYearsItem = yearDropdown.querySelector('[data-value="all"]');
-            yearDropdown.innerHTML = '';
-            yearDropdown.appendChild(allYearsItem);
-            
-            // Add year items
-            sortedYears.forEach(year => {
-                const item = document.createElement('div');
-                item.className = 'filter-dropdown-item';
-                item.setAttribute('data-value', year.toString());
-                item.textContent = year.toString();
-                
-                item.addEventListener('click', function() {
-                    setFilter('year', this.getAttribute('data-value'));
-                    yearDropdown.classList.remove('show');
-                });
-                
-                yearDropdown.appendChild(item);
-            });
-        }
-        
-        // Show login screen
-        function showLoginScreen() {
-            loadingOverlay.classList.add('hidden');
-            loginScreen.classList.remove('hidden');
-            dashboardScreen.classList.add('hidden');
-        }
-        
-        // Show dashboard
-        async function showDashboard() {
-            try {
-                loadingOverlay.classList.remove('hidden');
-                
-                // Set user role display
-                document.getElementById('userRole').textContent = currentUser.role;
-                
-                // Show/hide action buttons based on role
-                const actionButtons = document.getElementById('actionButtons');
-                if (currentUser.role === 'Bendahara') {
-                    actionButtons.classList.remove('hidden');
-                } else {
-                    actionButtons.classList.add('hidden');
-                }
-                
-                // Fetch dashboard data
-                const response = await fetchData('dashboard');
-                
-                if (response && response.success) {
-                    // Update balance
-                    const balanceElement = document.getElementById('currentBalance');
-                    balanceElement.textContent = formatCurrency(response.balance || 0);
-                    
-                    // Update balance color based on value
-                    if (response.balance > 0) {
-                        balanceElement.classList.add('balance-positive');
-                        balanceElement.classList.remove('balance-negative');
-                    } else if (response.balance < 0) {
-                        balanceElement.classList.add('balance-negative');
-                        balanceElement.classList.remove('balance-positive');
-                    } else {
-                        balanceElement.classList.remove('balance-positive', 'balance-negative');
-                    }
-                    
-                    document.getElementById('lastUpdated').textContent = response.lastUpdated || '-';
-                    
-                    // Update recent transactions
-                    allTransactions = response.transactions || [];
-                    updateRecentTransactions();
-                    
-                    // Populate year filter dropdown
-                    populateYearFilter();
-                    
-                    // Show dashboard screen
-                    loginScreen.classList.add('hidden');
-                    dashboardScreen.classList.remove('hidden');
-                } else {
-                    showError("Gagal memuat data dashboard. Silakan coba lagi.");
-                }
-            } catch (error) {
-                console.error("Error showing dashboard:", error);
-                showError("Terjadi kesalahan saat memuat dashboard. Silakan coba lagi.");
-            } finally {
-                loadingOverlay.classList.add('hidden');
-            }
-        }
-        
-        // Handle login
-        async function handleLogin(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const loginError = document.getElementById('loginError');
+
+        // Login function
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             
             if (!username || !password) {
-                loginError.textContent = "Username dan password harus diisi";
-                loginError.classList.remove('hidden');
+                alert('Username dan password harus diisi');
+                return;
+            }
+            
+            // Check against local users data first
+            const user = appData.users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                
+                // Hide pre-login, show dashboard
+                document.getElementById('pre-login').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                
+                // Load transactions and balance
+                await loadTransactions();
+                updateUIForUserRole();
+            } else {
+                alert('Username atau password salah');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            // Hide dashboard, show pre-login
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('pre-login').classList.remove('hidden');
+        }
+
+        // Update UI based on user role
+        function updateUIForUserRole() {
+            const actionButtons = document.getElementById('action-buttons');
+            
+            if (currentUser.role === 'Bendahara') {
+                actionButtons.classList.remove('hidden');
+            } else {
+                actionButtons.classList.add('hidden');
+            }
+        }
+
+        // Load transactions and update balance
+        async function loadTransactions() {
+            try {
+                const response = await fetch(API_ENDPOINT + '?action=getTransactions');
+                const data = await response.json();
+                
+                if (data.success) {
+                    appData.transactions = data.transactions || [];
+                    appData.currentBalance = data.currentBalance || 0;
+                    
+                    // Update UI
+                    updateBalanceDisplay();
+                    updateRecentTransactions();
+                } else {
+                    alert('Gagal memuat transaksi: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                alert('Terjadi kesalahan saat memuat transaksi');
+            }
+        }
+
+        // Update balance display
+        function updateBalanceDisplay() {
+            const balanceElement = document.getElementById('current-balance');
+            balanceElement.textContent = formatCurrency(appData.currentBalance);
+            
+            // Change color based on balance
+            if (appData.currentBalance > 0) {
+                balanceElement.classList.remove('text-red-600', 'text-gray-900');
+                balanceElement.classList.add('text-green-600');
+            } else if (appData.currentBalance < 0) {
+                balanceElement.classList.remove('text-green-600', 'text-gray-900');
+                balanceElement.classList.add('text-red-600');
+            } else {
+                balanceElement.classList.remove('text-green-600', 'text-red-600');
+                balanceElement.classList.add('text-gray-900');
+            }
+        }
+
+        // Update recent transactions display
+        function updateRecentTransactions() {
+            const container = document.getElementById('recent-transactions');
+            container.innerHTML = '';
+            
+            // Get last 3 transactions
+            const recentTransactions = [...appData.transactions]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 3);
+            
+            if (recentTransactions.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">Belum ada transaksi</p>';
+                return;
+            }
+            
+            recentTransactions.forEach(transaction => {
+                const transactionElement = document.createElement('div');
+                transactionElement.className = 'bg-white overflow-hidden shadow rounded-lg';
+                
+                const isIncome = transaction.income > 0;
+                const amount = isIncome ? transaction.income : transaction.expense;
+                const amountClass = isIncome ? 'text-green-600' : 'text-red-600';
+                
+                transactionElement.innerHTML = `
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                                <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'} text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    ${transaction.description}
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold ${amountClass}">
+                                        ${isIncome ? '+' : '-'}${formatCurrency(amount)}
+                                    </div>
+                                    <div class="ml-2 text-sm font-medium text-gray-500">
+                                        ${formatDate(transaction.date)}
+                                    </div>
+                                </dd>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-500">${transaction.notes || 'Tidak ada keterangan'}</p>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(transactionElement);
+            });
+        }
+
+        // Show transaction form
+        function showTransactionForm(type) {
+            document.getElementById('transaction-type').value = type;
+            
+            const title = document.getElementById('transaction-title');
+            const amountField = document.getElementById('amount-field');
+            
+            if (type === 'income') {
+                title.textContent = 'TAMBAH PEMASUKAN';
+                amountField.innerHTML = `
+                    <label for="transaction-amount" class="block text-sm font-medium text-gray-700">Jumlah Pemasukan</label>
+                    <input type="number" id="transaction-amount" name="amount" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="0">
+                `;
+            } else {
+                title.textContent = 'TAMBAH PENGELUARAN';
+                amountField.innerHTML = `
+                    <label for="transaction-amount" class="block text-sm font-medium text-gray-700">Jumlah Pengeluaran</label>
+                    <input type="number" id="transaction-amount" name="amount" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="0">
+                `;
+            }
+            
+            document.getElementById('transaction-modal').classList.remove('hidden');
+        }
+
+        // Hide transaction form
+        function hideTransactionForm() {
+            document.getElementById('transaction-modal').classList.add('hidden');
+            document.getElementById('transaction-form').reset();
+        }
+
+        // Submit transaction
+        async function submitTransaction() {
+            const form = document.getElementById('transaction-form');
+            const formData = new FormData(form);
+            const type = document.getElementById('transaction-type').value;
+            const amount = document.getElementById('transaction-amount').value;
+            
+            if (!amount || parseFloat(amount) <= 0) {
+                alert('Jumlah harus lebih dari 0');
+                return;
+            }
+            
+            // Prepare data for API
+            const transactionData = {
+                action: 'addTransaction',
+                date: formData.get('date'),
+                description: formData.get('description'),
+                income: type === 'income' ? parseFloat(amount) : 0,
+                expense: type === 'expense' ? parseFloat(amount) : 0,
+                notes: formData.get('notes'),
+                role: currentUser.role
+            };
+            
+            // Handle file upload if exists
+            const receiptFile = document.getElementById('transaction-receipt').files[0];
+            if (receiptFile) {
+                transactionData.receipt = receiptFile;
+            }
+            
+            try {
+                // Create FormData for the request (to handle file upload)
+                const apiFormData = new FormData();
+                for (const key in transactionData) {
+                    apiFormData.append(key, transactionData[key]);
+                }
+                
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    body: apiFormData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Transaksi berhasil disimpan');
+                    hideTransactionForm();
+                    await loadTransactions();
+                } else {
+                    alert('Gagal menyimpan transaksi: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error submitting transaction:', error);
+                alert('Terjadi kesalahan saat menyimpan transaksi');
+            }
+        }
+
+        // Show report
+        function showReport() {
+            // Set default dates (current month)
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+            const lastDay = today.toISOString().split('T')[0];
+            
+            document.getElementById('report-start-date').value = firstDay;
+            document.getElementById('report-end-date').value = lastDay;
+            
+            document.getElementById('report-modal').classList.remove('hidden');
+            loadReport();
+        }
+
+        // Hide report
+        function hideReport() {
+            document.getElementById('report-modal').classList.add('hidden');
+        }
+
+        // Load report data
+        async function loadReport() {
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Harap pilih rentang tanggal');
                 return;
             }
             
             try {
-                loadingOverlay.classList.remove('hidden');
-                loginError.classList.add('hidden');
+                const response = await fetch(`${API_ENDPOINT}?action=getReport&startDate=${startDate}&endDate=${endDate}`);
+                const data = await response.json();
                 
-                const response = await fetchData('login', {
-                    username: username,
-                    password: password
+                if (data.success) {
+                    const transactions = data.transactions || [];
+                    const tableBody = document.getElementById('report-table-body');
+                    tableBody.innerHTML = '';
+                    
+                    if (transactions.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada transaksi dalam rentang tanggal ini</td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    transactions.forEach(transaction => {
+                        const row = document.createElement('tr');
+                        
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(transaction.date)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${transaction.description}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">${transaction.income > 0 ? formatCurrency(transaction.income) : '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">${transaction.expense > 0 ? formatCurrency(transaction.expense) : '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${transaction.balance > 0 ? 'text-green-600' : transaction.balance < 0 ? 'text-red-600' : 'text-gray-900'}">${formatCurrency(transaction.balance)}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">${transaction.notes || '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                ${currentUser.role === 'Bendahara' ? `
+                                <button onclick="showEditForm('${transaction.id}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                                <button onclick="deleteTransaction('${transaction.id}')" class="text-red-600 hover:text-red-900">Hapus</button>
+                                ` : '-'}
+                            </td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    alert('Gagal memuat laporan: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error loading report:', error);
+                alert('Terjadi kesalahan saat memuat laporan');
+            }
+        }
+
+        // Show edit form
+        async function showEditForm(transactionId) {
+            try {
+                const response = await fetch(`${API_ENDPOINT}?action=getTransaction&id=${transactionId}`);
+                const data = await response.json();
+                
+                if (data.success && data.transaction) {
+                    const transaction = data.transaction;
+                    
+                    // Fill the form
+                    document.getElementById('edit-id').value = transaction.id;
+                    document.getElementById('edit-date').value = transaction.date;
+                    document.getElementById('edit-description').value = transaction.description;
+                    document.getElementById('edit-income').value = transaction.income;
+                    document.getElementById('edit-expense').value = transaction.expense;
+                    document.getElementById('edit-notes').value = transaction.notes || '';
+                    
+                    // Show receipt if exists
+                    const receiptContainer = document.getElementById('edit-receipt-container');
+                    receiptContainer.innerHTML = '';
+                    
+                    if (transaction.receiptUrl) {
+                        receiptContainer.innerHTML = `
+                            <label class="block text-sm font-medium text-gray-700">Foto Barang Saat Ini</label>
+                            <img src="${transaction.receiptUrl}" alt="Foto Barang" class="mt-2 max-w-xs h-auto">
+                        `;
+                    }
+                    
+                    document.getElementById('edit-modal').classList.remove('hidden');
+                } else {
+                    alert('Gagal memuat data transaksi: ' + (data.message || 'Transaksi tidak ditemukan'));
+                }
+            } catch (error) {
+                console.error('Error loading transaction for edit:', error);
+                alert('Terjadi kesalahan saat memuat data transaksi');
+            }
+        }
+
+        // Hide edit form
+        function hideEditForm() {
+            document.getElementById('edit-modal').classList.add('hidden');
+            document.getElementById('edit-form').reset();
+            document.getElementById('edit-receipt-container').innerHTML = '';
+        }
+
+        // Update transaction
+        async function updateTransaction() {
+            const id = document.getElementById('edit-id').value;
+            const date = document.getElementById('edit-date').value;
+            const description = document.getElementById('edit-description').value;
+            const income = parseFloat(document.getElementById('edit-income').value) || 0;
+            const expense = parseFloat(document.getElementById('edit-expense').value) || 0;
+            const notes = document.getElementById('edit-notes').value;
+            
+            if (!date || !description) {
+                alert('Tanggal dan uraian harus diisi');
+                return;
+            }
+            
+            if (income < 0 || expense < 0) {
+                alert('Jumlah pemasukan/pengeluaran tidak boleh negatif');
+                return;
+            }
+            
+            if (income > 0 && expense > 0) {
+                alert('Transaksi tidak boleh memiliki pemasukan dan pengeluaran sekaligus');
+                return;
+            }
+            
+            const transactionData = {
+                action: 'updateTransaction',
+                id: id,
+                date: date,
+                description: description,
+                income: income,
+                expense: expense,
+                notes: notes,
+                role: currentUser.role
+            };
+            
+            // Handle file upload if exists
+            const receiptFile = document.getElementById('edit-receipt').files[0];
+            if (receiptFile) {
+                transactionData.receipt = receiptFile;
+            }
+            
+            try {
+                // Create FormData for the request (to handle file upload)
+                const apiFormData = new FormData();
+                for (const key in transactionData) {
+                    apiFormData.append(key, transactionData[key]);
+                }
+                
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    body: apiFormData
                 });
                 
-                if (response && response.success) {
-                    currentUser = {
-                        username: username,
-                        role: response.role
-                    };
-                    
-                    // Save to session storage
-                    sessionStorage.setItem('kasUmumUser', JSON.stringify(currentUser));
-                    
-                    // Show dashboard
-                    showDashboard();
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Transaksi berhasil diperbarui');
+                    hideEditForm();
+                    await loadTransactions();
+                    await loadReport(); // Refresh report if open
                 } else {
-                    loginError.textContent = response?.message || "Username atau password salah";
-                    loginError.classList.remove('hidden');
+                    alert('Gagal memperbarui transaksi: ' + data.message);
                 }
             } catch (error) {
-                console.error("Login error:", error);
-                loginError.textContent = "Terjadi kesalahan saat login. Silakan coba lagi.";
-                loginError.classList.remove('hidden');
-            } finally {
-                loadingOverlay.classList.add('hidden');
+                console.error('Error updating transaction:', error);
+                alert('Terjadi kesalahan saat memperbarui transaksi');
             }
         }
-        
-        // Handle logout
-        function handleLogout() {
-            // Clear session storage
-            sessionStorage.removeItem('kasUmumUser');
-            currentUser = null;
-            
-            // Show login screen
-            showLoginScreen();
-        }
-        
-        // Show transaction modal
-        function showTransactionModal(type) {
-            currentTransactionType = type;
-            
-            // Set modal title
-            const modalTitle = document.getElementById('modalTitle');
-            if (type === 'income') {
-                modalTitle.textContent = 'Tambah Pemasukan';
-            } else {
-                modalTitle.textContent = 'Tambah Pengeluaran';
-            }
-            
-            // Reset form
-            document.getElementById('transactionId').value = '';
-            document.getElementById('existingImage').value = '';
-            
-            // Set default date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('transactionDate').value = today;
-            
-            // Clear form fields
-            document.getElementById('transactionDescription').value = '';
-            document.getElementById('transactionAmount').value = '';
-            document.getElementById('transactionNotes').value = '';
-            document.getElementById('fileName').textContent = 'Tidak ada file dipilih';
-            document.getElementById('imagePreview').style.display = 'none';
-            document.getElementById('transactionImage').value = '';
-            
-            // Show modal
-            transactionModal.classList.remove('hidden');
-        }
-        
-        // Hide transaction modal
-        function hideTransactionModal() {
-            transactionModal.classList.add('hidden');
-        }
-        
-        // Show notification
-        function showNotification(message, isSuccess = true) {
-            notificationMessage.textContent = message;
-            
-            // Set notification color based on success/error
-            const notificationDiv = notification.querySelector('div');
-            if (isSuccess) {
-                notificationDiv.className = 'max-w-md mx-auto m-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md notification';
-                notificationDiv.querySelector('i').className = 'fas fa-check-circle text-green-500 mr-2';
-            } else {
-                notificationDiv.className = 'max-w-md mx-auto m-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md notification';
-                notificationDiv.querySelector('i').className = 'fas fa-exclamation-circle text-red-500 mr-2';
-            }
-            
-            // Show notification
-            notification.classList.remove('hidden');
-            
-            // Hide notification after 3.5 seconds
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 3500);
-        }
-        
-        // Handle edit transaction
-        async function handleEditTransaction(transactionId) {
-            try {
-                loadingOverlay.classList.remove('hidden');
-                
-                // Find the transaction
-                const transaction = allTransactions.find(t => t.id === transactionId);
-                if (!transaction) {
-                    showNotification("Transaksi tidak ditemukan", false);
-                    return;
-                }
-                
-                // Set modal title
-                const modalTitle = document.getElementById('modalTitle');
-                if (transaction.income > 0) {
-                    modalTitle.textContent = 'Edit Pemasukan';
-                    currentTransactionType = 'income';
-                } else {
-                    modalTitle.textContent = 'Edit Pengeluaran';
-                    currentTransactionType = 'expense';
-                }
-                
-                // Set form values
-                document.getElementById('transactionId').value = transaction.id;
-                document.getElementById('transactionDate').value = transaction.date.split('T')[0];
-                document.getElementById('transactionDescription').value = transaction.description;
-                document.getElementById('transactionAmount').value = transaction.income > 0 ? transaction.income : transaction.expense;
-                document.getElementById('transactionNotes').value = transaction.notes || '';
-                
-                // Handle image
-                const fileName = document.getElementById('fileName');
-                const imagePreview = document.getElementById('imagePreview');
-                const existingImage = document.getElementById('existingImage');
-                
-                if (transaction.imageUrl) {
-                    fileName.textContent = 'Gambar sudah diupload';
-                    imagePreview.src = `${API_URL}?image=${transaction.imageUrl}`;
-                    imagePreview.style.display = 'block';
-                    existingImage.value = transaction.imageUrl;
-                } else {
-                    fileName.textContent = 'Tidak ada gambar';
-                    imagePreview.style.display = 'none';
-                    existingImage.value = '';
-                }
-                
-                // Show modal
-                transactionModal.classList.remove('hidden');
-            } catch (error) {
-                console.error("Edit error:", error);
-                showNotification("Terjadi kesalahan saat memuat transaksi", false);
-            } finally {
-                loadingOverlay.classList.add('hidden');
-            }
-        }
-        
-        // Handle delete transaction
-        async function handleDeleteTransaction(transactionId) {
+
+        // Delete transaction
+        async function deleteTransaction(transactionId) {
             if (!confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
                 return;
             }
             
             try {
-                loadingOverlay.classList.remove('hidden');
-                
-                const response = await fetchData('deleteTransaction', {
-                    transactionId: transactionId
-                });
-                
-                if (response && response.success) {
-                    showNotification('Transaksi berhasil dihapus!', true);
-                    showDashboard(); // Refresh data
-                } else {
-                    showNotification(response?.message || "Gagal menghapus transaksi", false);
-                }
-            } catch (error) {
-                console.error("Delete error:", error);
-                showNotification("Terjadi kesalahan saat menghapus transaksi", false);
-            } finally {
-                loadingOverlay.classList.add('hidden');
-            }
-        }
-        
-        // Handle transaction submit
-        async function handleTransactionSubmit(e) {
-            e.preventDefault();
-            
-            const transactionId = document.getElementById('transactionId').value;
-            const date = document.getElementById('transactionDate').value;
-            const description = document.getElementById('transactionDescription').value.trim();
-            const amount = document.getElementById('transactionAmount').value;
-            const notes = document.getElementById('transactionNotes').value.trim();
-            const imageFile = document.getElementById('transactionImage').files[0];
-            const existingImage = document.getElementById('existingImage').value;
-            
-            if (!date || !description || !amount || amount <= 0) {
-                alert('Mohon lengkapi semua field dengan benar');
-                return;
-            }
-            
-            try {
-                loadingOverlay.classList.remove('hidden');
-                hideTransactionModal();
-                
-                const formData = {
-                    date: date,
-                    description: description,
-                    type: currentTransactionType,
-                    amount: amount,
-                    notes: notes,
-                    existingImage: existingImage,
-                    username: currentUser.username
-                };
-                
-                // Handle image upload
-                if (imageFile) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        const base64String = event.target.result.split(',')[1];
-                        formData.image = base64String;
-                        
-                        // Continue with submission
-                        submitTransactionData(transactionId, formData);
-                    };
-                    reader.readAsDataURL(imageFile);
-                } else {
-                    // Submit without image
-                    submitTransactionData(transactionId, formData);
-                }
-            } catch (error) {
-                console.error("Transaction error:", error);
-                showNotification("Terjadi kesalahan saat memproses transaksi", false);
-                loadingOverlay.classList.add('hidden');
-            }
-        }
-        
-        // Submit transaction data to API
-        async function submitTransactionData(transactionId, formData) {
-            try {
-                const action = transactionId ? 'updateTransaction' : 'addTransaction';
-                if (transactionId) {
-                    formData.transactionId = transactionId;
-                }
-                
-                const response = await fetchData(action, formData);
-                
-                if (response && response.success) {
-                    showNotification(transactionId ? 'Transaksi berhasil diperbarui!' : 'Transaksi berhasil disimpan!', true);
-                    showDashboard(); // Refresh data
-                } else {
-                    showNotification(response?.message || (transactionId ? "Gagal memperbarui transaksi" : "Gagal menyimpan transaksi"), false);
-                }
-            } catch (error) {
-                console.error("Submit error:", error);
-                showNotification("Terjadi kesalahan saat memproses transaksi", false);
-            } finally {
-                loadingOverlay.classList.add('hidden');
-                document.getElementById('transactionId').value = ''; // Clear transaction ID
-            }
-        }
-        
-        // Show recap modal
-        function showRecapModal() {
-            // Reset filters
-            resetFilters();
-            
-            // Show modal
-            recapModal.classList.remove('hidden');
-        }
-        
-        // Hide recap modal
-        function hideRecapModal() {
-            recapModal.classList.add('hidden');
-        }
-        
-        // Update recent transactions
-        function updateRecentTransactions() {
-            const container = document.getElementById('recentTransactions');
-            
-            if (!allTransactions || allTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-receipt text-2xl mb-2"></i>
-                        <p>Belum ada transaksi</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Get the 3 most recent transactions
-            const recentTransactions = allTransactions.slice(0, 3);
-            
-            // Clear container
-            container.innerHTML = '';
-            
-            // Add transactions
-            recentTransactions.forEach(transaction => {
-                const isIncome = transaction.income > 0;
-                const amount = isIncome ? transaction.income : transaction.expense;
-                
-                const transactionEl = document.createElement('div');
-                transactionEl.className = 'border-b border-gray-200 pb-3';
-                transactionEl.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-medium">${transaction.description}</h3>
-                            <p class="text-sm text-gray-500">${formatDate(transaction.date)}</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="${isIncome ? 'text-green-600' : 'text-red-600'} font-medium">
-                                ${isIncome ? '+' : '-'} ${formatCurrency(amount)}
-                            </span>
-                        </div>
-                    </div>
-                    ${transaction.notes ? `<p class="text-sm text-gray-600 mt-1">${transaction.notes}</p>` : ''}
-                    ${transaction.imageUrl ? `
-                        <div class="mt-2">
-                            <button class="view-image-btn text-blue-500 text-sm" data-image="${transaction.imageUrl}">
-                                <i class="fas fa-image mr-1"></i> Lihat Gambar
-                            </button>
-                        </div>
-                    ` : ''}
-                `;
-                
-                container.appendChild(transactionEl);
-            });
-        }
-        
-        // Update recap table
-        function updateRecapTable(transactions) {
-            const tableBody = document.getElementById('recapTableBody');
-            
-            if (!transactions || transactions.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="text-center py-4 text-gray-500">
-                            Tidak ada transaksi yang sesuai dengan filter
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Clear table body
-            tableBody.innerHTML = '';
-            
-            // Add transactions
-            transactions.forEach(transaction => {
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-gray-50';
-                
-                // Basic transaction info
-                row.innerHTML = `
-                    <td class="py-2 px-4 border-b border-gray-200">${formatDate(transaction.date)}</td>
-                    <td class="py-2 px-4 border-b border-gray-200">${transaction.description}</td>
-                    <td class="py-2 px-4 border-b border-gray-200 ${transaction.income > 0 ? 'text-green-600' : ''}">${transaction.income > 0 ? formatCurrency(transaction.income) : '-'}</td>
-                    <td class="py-2 px-4 border-b border-gray-200 ${transaction.expense > 0 ? 'text-red-600' : ''}">${transaction.expense > 0 ? formatCurrency(transaction.expense) : '-'}</td>
-                    <td class="py-2 px-4 border-b border-gray-200 font-medium">${formatCurrency(transaction.balance)}</td>
-                    <td class="py-2 px-4 border-b border-gray-200 text-gray-600">${transaction.notes || '-'}</td>
-                    <td class="py-2 px-4 border-b border-gray-200">
-                        ${transaction.imageUrl ? `
-                            <button class="view-image-btn text-blue-500 text-sm" data-image="${transaction.imageUrl}">
-                                <i class="fas fa-image"></i>
-                            </button>
-                        ` : '-'}
-                    </td>
-                `;
-                
-                // Add action buttons if user is Bendahara
-                if (currentUser && currentUser.role === 'Bendahara') {
-                    row.innerHTML += `
-                        <td class="py-2 px-4 border-b border-gray-200">
-                            <button class="edit-btn text-blue-500 hover:text-blue-700 mr-2" data-id="${transaction.id}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="delete-btn text-red-500 hover:text-red-700" data-id="${transaction.id}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    `;
-                } else {
-                    row.innerHTML += `<td class="py-2 px-4 border-b border-gray-200"></td>`;
-                }
-                
-                tableBody.appendChild(row);
-            });
-        }
-        
-        // Fetch data from API via Cloudflare Worker
-        async function fetchData(action, data = {}) {
-            try {
-                const payload = {
-                    action: action,
-                    ...data
-                };
-                
-                const response = await fetch(API_URL, {
+                const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: JSON.stringify(payload)
+                    body: `action=deleteTransaction&id=${transactionId}&role=${currentUser.role}`
                 });
                 
-                return await response.json();
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Transaksi berhasil dihapus');
+                    await loadTransactions();
+                    await loadReport(); // Refresh report if open
+                } else {
+                    alert('Gagal menghapus transaksi: ' + data.message);
+                }
             } catch (error) {
-                console.error(`Error fetching ${action} data:`, error);
-                throw error;
+                console.error('Error deleting transaction:', error);
+                alert('Terjadi kesalahan saat menghapus transaksi');
             }
         }
-        
-        // Show error message
-        function showError(message) {
-            showNotification(message, false);
-        }
-        
-        // Format currency
+
+        // Helper function to format currency
         function formatCurrency(amount) {
-            return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
+            return 'Rp' + parseFloat(amount).toLocaleString('id-ID');
         }
-        
-        // Format date
+
+        // Helper function to format date
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            });
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
         }
     </script>
 </body>
