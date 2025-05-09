@@ -8,232 +8,171 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="bg-gray-100">
-    <div id="app" class="min-h-screen">
-        <!-- Pre-Login Page -->
-        <div id="pre-login" class="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-                <div class="flex flex-col items-center">
-                    <img id="logo" src="" alt="Logo Sekolah" class="h-24 w-auto mb-4">
-                    <h2 class="mt-2 text-center text-3xl font-extrabold text-gray-900">KAS UMUM</h2>
-                    <p id="description" class="mt-2 text-center text-sm text-gray-600"></p>
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Login</h2>
+                <button onclick="closeLoginModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <select id="username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Pilih User</option>
+                    </select>
                 </div>
-                <div class="mt-8">
-                    <div class="rounded-md shadow-sm">
-                        <div>
-                            <label for="username" class="sr-only">Username</label>
-                            <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Username">
-                        </div>
-                        <div>
-                            <label for="password" class="sr-only">Password</label>
-                            <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Password">
-                        </div>
-                    </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                    <div class="mt-6">
-                        <button onclick="login()" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Masuk
-                        </button>
-                    </div>
-                </div>
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <div id="logoContainer" class="flex justify-center mb-4">
+                <img id="logo" src="" alt="Logo" class="h-24">
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800">KAS UMUM</h1>
+            <p id="description" class="text-gray-600 mt-2"></p>
+        </header>
+
+        <!-- Saldo Section -->
+        <div id="saldoSection" class="bg-white rounded-lg shadow-md p-6 mb-8 text-center hidden">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Saldo Saat Ini</h2>
+            <p id="saldo" class="text-4xl font-bold text-indigo-600">Rp0</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="actionButtons" class="flex justify-center space-x-4 mb-8 hidden">
+            <button onclick="showTransactionModal('pemasukan')" class="bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg font-medium">
+                <i class="fas fa-plus mr-2"></i>Pemasukan
+            </button>
+            <button onclick="showTransactionModal('pengeluaran')" class="bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg font-medium">
+                <i class="fas fa-minus mr-2"></i>Pengeluaran
+            </button>
+            <button onclick="showRekap()" class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium">
+                <i class="fas fa-file-alt mr-2"></i>Rekap
+            </button>
+            <button onclick="logout()" class="bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg font-medium">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+        </div>
+
+        <!-- Last Transactions -->
+        <div id="lastTransactions" class="mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">3 Transaksi Terakhir</h2>
+            <div id="transactionsList" class="space-y-4">
+                <!-- Transactions will be loaded here -->
             </div>
         </div>
 
-        <!-- Main Dashboard (Hidden until login) -->
-        <div id="dashboard" class="hidden">
-            <!-- Header -->
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <h1 class="text-3xl font-bold text-gray-900">KAS UMUM</h1>
-                    <button onclick="logout()" class="text-sm text-blue-600 hover:text-blue-800">Keluar</button>
+        <!-- Transaction Modal -->
+        <div id="transactionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="transactionTitle" class="text-xl font-bold">Tambah Transaksi</h2>
+                    <button onclick="closeTransactionModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-            </header>
-
-            <!-- Main Content -->
-            <main>
-                <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                    <!-- Current Balance -->
-                    <div class="px-4 py-6 sm:px-0">
-                        <div class="border-4 border-dashed border-gray-200 rounded-lg p-8 text-center">
-                            <h2 class="text-lg font-medium text-gray-500">SALDO SAAT INI</h2>
-                            <p id="current-balance" class="mt-2 text-5xl font-semibold text-gray-900">Rp0</p>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div id="action-buttons" class="mt-5 flex justify-center space-x-4">
-                        <button onclick="showTransactionForm('income')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            <i class="fas fa-plus mr-2"></i> Pemasukan
-                        </button>
-                        <button onclick="showTransactionForm('expense')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                            <i class="fas fa-minus mr-2"></i> Pengeluaran
-                        </button>
-                        <button onclick="showReport()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <i class="fas fa-file-alt mr-2"></i> Rekap
-                        </button>
-                    </div>
-
-                    <!-- Recent Transactions -->
-                    <div class="mt-8">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">3 TRANSAKSI TERAKHIR</h3>
-                        <div id="recent-transactions" class="mt-4 grid gap-5 grid-cols-1 sm:grid-cols-3">
-                            <!-- Transactions will be loaded here -->
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-
-        <!-- Transaction Form Modal -->
-        <div id="transaction-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <form id="transactionForm" class="space-y-4">
+                    <input type="hidden" id="transactionId">
                     <div>
-                        <h3 id="transaction-title" class="text-lg leading-6 font-medium text-gray-900"></h3>
-                        <div class="mt-5">
-                            <form id="transaction-form" class="space-y-4">
-                                <input type="hidden" id="transaction-type">
-                                <div>
-                                    <label for="transaction-date" class="block text-sm font-medium text-gray-700">Tanggal</label>
-                                    <input type="date" id="transaction-date" name="date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="transaction-description" class="block text-sm font-medium text-gray-700">Uraian</label>
-                                    <input type="text" id="transaction-description" name="description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                                <div id="amount-field">
-                                    <!-- Amount field will be dynamically set based on transaction type -->
-                                </div>
-                                <div>
-                                    <label for="transaction-notes" class="block text-sm font-medium text-gray-700">Keterangan</label>
-                                    <textarea id="transaction-notes" name="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
-                                </div>
-                                <div>
-                                    <label for="transaction-receipt" class="block text-sm font-medium text-gray-700">Upload Foto Barang (Opsional)</label>
-                                    <input type="file" id="transaction-receipt" name="receipt" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                                </div>
-                            </form>
-                        </div>
+                        <label for="transactionType" class="block text-sm font-medium text-gray-700">Jenis</label>
+                        <select id="transactionType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" disabled>
+                            <option value="pemasukan">Pemasukan</option>
+                            <option value="pengeluaran">Pengeluaran</option>
+                        </select>
                     </div>
-                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                        <button onclick="submitTransaction()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
+                    <div>
+                        <label for="transactionDate" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                        <input type="date" id="transactionDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="transactionUraian" class="block text-sm font-medium text-gray-700">Uraian</label>
+                        <input type="text" id="transactionUraian" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label id="amountLabel" for="transactionAmount" class="block text-sm font-medium text-gray-700">Jumlah Pemasukan</label>
+                        <input type="number" id="transactionAmount" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="transactionKeterangan" class="block text-sm font-medium text-gray-700">Keterangan</label>
+                        <textarea id="transactionKeterangan" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+                    <div>
+                        <label for="transactionPhoto" class="block text-sm font-medium text-gray-700">Foto Barang (Opsional)</label>
+                        <input type="file" id="transactionPhoto" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeTransactionModal()" class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Batal
+                        </button>
+                        <button type="submit" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Simpan
                         </button>
-                        <button onclick="hideTransactionForm()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
-                            Batal
-                        </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
 
-        <!-- Report Modal -->
-        <div id="report-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <!-- Rekap Modal -->
+        <div id="rekapModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden overflow-y-auto">
+            <div class="bg-white rounded-lg p-6 w-full max-w-4xl max-h-screen my-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Rekap Transaksi</h2>
+                    <button onclick="closeRekapModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6">
+                <div class="mb-4 flex justify-between">
                     <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">REKAP TRANSAKSI</h3>
-                        <div class="mt-5">
-                            <div class="flex justify-between mb-4">
-                                <div>
-                                    <label for="report-start-date" class="block text-sm font-medium text-gray-700">Dari Tanggal</label>
-                                    <input type="date" id="report-start-date" class="mt-1 block border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="report-end-date" class="block text-sm font-medium text-gray-700">Sampai Tanggal</label>
-                                    <input type="date" id="report-end-date" class="mt-1 block border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                                <button onclick="loadReport()" class="self-end inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    <i class="fas fa-filter mr-2"></i> Filter
-                                </button>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uraian</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pemasukan</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengeluaran</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="report-table-body" class="bg-white divide-y divide-gray-200">
-                                        <!-- Report data will be loaded here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <label for="rekapStartDate" class="block text-sm font-medium text-gray-700">Dari Tanggal</label>
+                        <input type="date" id="rekapStartDate" class="mt-1 border border-gray-300 rounded-md shadow-sm py-1 px-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                    <div class="mt-5 sm:mt-6">
-                        <button onclick="hideReport()" type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
-                            Tutup
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Transaction Modal -->
-        <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
                     <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit Transaksi</h3>
-                        <div class="mt-5">
-                            <form id="edit-form" class="space-y-4">
-                                <input type="hidden" id="edit-id">
-                                <div>
-                                    <label for="edit-date" class="block text-sm font-medium text-gray-700">Tanggal</label>
-                                    <input type="date" id="edit-date" name="date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="edit-description" class="block text-sm font-medium text-gray-700">Uraian</label>
-                                    <input type="text" id="edit-description" name="description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="edit-income" class="block text-sm font-medium text-gray-700">Pemasukan</label>
-                                    <input type="number" id="edit-income" name="income" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="edit-expense" class="block text-sm font-medium text-gray-700">Pengeluaran</label>
-                                    <input type="number" id="edit-expense" name="expense" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="edit-notes" class="block text-sm font-medium text-gray-700">Keterangan</label>
-                                    <textarea id="edit-notes" name="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
-                                </div>
-                                <div id="edit-receipt-container">
-                                    <!-- Receipt image will be shown here if exists -->
-                                </div>
-                                <div>
-                                    <label for="edit-receipt" class="block text-sm font-medium text-gray-700">Ganti Foto Barang (Opsional)</label>
-                                    <input type="file" id="edit-receipt" name="receipt" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                                </div>
-                            </form>
-                        </div>
+                        <label for="rekapEndDate" class="block text-sm font-medium text-gray-700">Sampai Tanggal</label>
+                        <input type="date" id="rekapEndDate" class="mt-1 border border-gray-300 rounded-md shadow-sm py-1 px-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                        <button onclick="updateTransaction()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
-                            Simpan Perubahan
-                        </button>
-                        <button onclick="hideEditForm()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
-                            Batal
-                        </button>
-                    </div>
+                    <button onclick="loadRekap()" class="self-end py-1 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Filter
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uraian</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pemasukan</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengeluaran</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" id="actionColumnHeader">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rekapTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Rekap data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 flex justify-between items-center">
+                    <div id="rekapSummary" class="text-sm text-gray-600"></div>
+                    <button onclick="closeRekapModal()" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Tutup
+                    </button>
                 </div>
             </div>
         </div>
@@ -242,486 +181,435 @@
     <script>
         // Global variables
         let currentUser = null;
-        let appData = {
-            logo: '',
-            description: '',
-            users: [],
-            transactions: [],
-            currentBalance: 0
-        };
+        let users = [];
+        let transactions = [];
+        let currentSaldo = 0;
+        let appConfig = {};
+        const endpoint = "https://script.google.com/macros/s/AKfycbxKy9CplLBPAZvLNgQ-A59G2bzj0xQ14dx9I4rFkMpqzNt1ow8cFr2QMobP9Q8NjiYWpA/exec";
 
-        // Endpoint configuration
-        const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxKy9CplLBPAZvLNgQ-A59G2bzj0xQ14dx9I4rFkMpqzNt1ow8cFr2QMobP9Q8NjiYWpA/exec';
+        // DOM elements
+        const loginModal = document.getElementById('loginModal');
+        const saldoSection = document.getElementById('saldoSection');
+        const actionButtons = document.getElementById('actionButtons');
+        const lastTransactions = document.getElementById('lastTransactions');
+        const transactionModal = document.getElementById('transactionModal');
+        const rekapModal = document.getElementById('rekapModal');
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default for transaction date
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('kasUmumUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                initializeApp();
+            } else {
+                showLoginModal();
+            }
+
+            // Load app config (logo, description, etc.)
+            loadAppConfig();
+
+            // Set default dates
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('transaction-date').value = today;
-            
-            // Load initial data
-            loadInitialData();
+            document.getElementById('transactionDate').value = today;
+            document.getElementById('rekapStartDate').value = getFirstDayOfMonth();
+            document.getElementById('rekapEndDate').value = today;
         });
 
-        // Load initial data (logo, description, users)
-        async function loadInitialData() {
-            try {
-                const response = await fetch(API_ENDPOINT + '?action=getInitialData');
-                const data = await response.json();
-                
-                if (data.success) {
-                    appData.logo = data.logo || '';
-                    appData.description = data.description || '';
-                    appData.users = data.users || [];
-                    
-                    // Update UI
-                    if (appData.logo) {
-                        document.getElementById('logo').src = appData.logo;
-                    }
-                    if (appData.description) {
-                        document.getElementById('description').textContent = appData.description;
-                    }
-                } else {
-                    alert('Gagal memuat data awal: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error loading initial data:', error);
-                alert('Terjadi kesalahan saat memuat data awal');
-            }
+        // Load app configuration
+        async function loadAppConfig() {
+  try {
+    // Gunakan POST request dengan FormData
+    const formData = new FormData();
+    formData.append('action', 'getConfig');
+    
+    const response = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      appConfig = data.data;
+      
+      // Set logo
+      const logo = document.getElementById('logo');
+      if (appConfig.logo) {
+        logo.src = appConfig.logo;
+      } else {
+        document.getElementById('logoContainer').innerHTML = '<i class="fas fa-piggy-bank text-6xl text-indigo-500"></i>';
+      }
+      
+      // Set description
+      document.getElementById('description').textContent = appConfig.description || 'Sistem pencatatan keuangan umum';
+      
+      // Load users
+      users = appConfig.users || [];
+      const usernameSelect = document.getElementById('username');
+      usernameSelect.innerHTML = '<option value="">Pilih User</option>';
+      
+      users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.username;
+        option.textContent = `${user.nama} (${user.role})`;
+        usernameSelect.appendChild(option);
+      });
+    }
+  } catch (error) {
+    console.error('Error loading app config:', error);
+    alert('Gagal memuat konfigurasi aplikasi');
+  }
+}
+        // Show login modal
+        function showLoginModal() {
+            loginModal.classList.remove('hidden');
         }
 
-        // Login function
-        async function login() {
+        // Close login modal
+        function closeLoginModal() {
+            loginModal.classList.add('hidden');
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            if (!username || !password) {
-                alert('Username dan password harus diisi');
-                return;
-            }
-            
-            // Check against local users data first
-            const user = appData.users.find(u => u.username === username && u.password === password);
+            const user = users.find(u => u.username === username && u.password === password);
             
             if (user) {
                 currentUser = user;
-                
-                // Hide pre-login, show dashboard
-                document.getElementById('pre-login').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                
-                // Load transactions and balance
-                await loadTransactions();
-                updateUIForUserRole();
+                localStorage.setItem('kasUmumUser', JSON.stringify(user));
+                closeLoginModal();
+                initializeApp();
             } else {
                 alert('Username atau password salah');
             }
-        }
+        });
 
-        // Logout function
-        function logout() {
-            currentUser = null;
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
+        // Initialize app after login
+        async function initializeApp() {
+            // Load transactions and saldo
+            await loadTransactions();
+            await loadSaldo();
             
-            // Hide dashboard, show pre-login
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('pre-login').classList.remove('hidden');
-        }
-
-        // Update UI based on user role
-        function updateUIForUserRole() {
-            const actionButtons = document.getElementById('action-buttons');
+            // Show/hide elements based on user role
+            saldoSection.classList.remove('hidden');
+            actionButtons.classList.remove('hidden');
             
             if (currentUser.role === 'Bendahara') {
-                actionButtons.classList.remove('hidden');
+                lastTransactions.classList.remove('hidden');
             } else {
-                actionButtons.classList.add('hidden');
+                lastTransactions.classList.add('hidden');
+            }
+            
+            // Update UI based on role
+            const pemasukanBtn = actionButtons.querySelector('button:first-child');
+            const pengeluaranBtn = actionButtons.querySelector('button:nth-child(2)');
+            
+            if (currentUser.role !== 'Bendahara') {
+                pemasukanBtn.classList.add('hidden');
+                pengeluaranBtn.classList.add('hidden');
+            } else {
+                pemasukanBtn.classList.remove('hidden');
+                pengeluaranBtn.classList.remove('hidden');
             }
         }
 
-        // Load transactions and update balance
+        // Load transactions
         async function loadTransactions() {
             try {
-                const response = await fetch(API_ENDPOINT + '?action=getTransactions');
+                const response = await fetch(`${endpoint}?action=getTransactions`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    appData.transactions = data.transactions || [];
-                    appData.currentBalance = data.currentBalance || 0;
-                    
-                    // Update UI
-                    updateBalanceDisplay();
-                    updateRecentTransactions();
-                } else {
-                    alert('Gagal memuat transaksi: ' + data.message);
+                    transactions = data.data;
+                    renderLastTransactions();
                 }
             } catch (error) {
                 console.error('Error loading transactions:', error);
-                alert('Terjadi kesalahan saat memuat transaksi');
+                alert('Gagal memuat transaksi');
             }
         }
 
-        // Update balance display
-        function updateBalanceDisplay() {
-            const balanceElement = document.getElementById('current-balance');
-            balanceElement.textContent = formatCurrency(appData.currentBalance);
-            
-            // Change color based on balance
-            if (appData.currentBalance > 0) {
-                balanceElement.classList.remove('text-red-600', 'text-gray-900');
-                balanceElement.classList.add('text-green-600');
-            } else if (appData.currentBalance < 0) {
-                balanceElement.classList.remove('text-green-600', 'text-gray-900');
-                balanceElement.classList.add('text-red-600');
-            } else {
-                balanceElement.classList.remove('text-green-600', 'text-red-600');
-                balanceElement.classList.add('text-gray-900');
+        // Load saldo
+        async function loadSaldo() {
+            try {
+                const response = await fetch(`${endpoint}?action=getSaldo`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentSaldo = data.saldo;
+                    document.getElementById('saldo').textContent = formatCurrency(currentSaldo);
+                }
+            } catch (error) {
+                console.error('Error loading saldo:', error);
+                alert('Gagal memuat saldo');
             }
         }
 
-        // Update recent transactions display
-        function updateRecentTransactions() {
-            const container = document.getElementById('recent-transactions');
-            container.innerHTML = '';
+        // Render last 3 transactions
+        function renderLastTransactions() {
+            const transactionsList = document.getElementById('transactionsList');
+            transactionsList.innerHTML = '';
             
-            // Get last 3 transactions
-            const recentTransactions = [...appData.transactions]
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 3);
+            const lastThree = transactions.slice(0, 3);
             
-            if (recentTransactions.length === 0) {
-                container.innerHTML = '<p class="text-gray-500">Belum ada transaksi</p>';
+            if (lastThree.length === 0) {
+                transactionsList.innerHTML = '<p class="text-gray-500">Belum ada transaksi</p>';
                 return;
             }
             
-            recentTransactions.forEach(transaction => {
-                const transactionElement = document.createElement('div');
-                transactionElement.className = 'bg-white overflow-hidden shadow rounded-lg';
+            lastThree.forEach(trans => {
+                const transElement = document.createElement('div');
+                transElement.className = 'bg-white rounded-lg shadow p-4';
                 
-                const isIncome = transaction.income > 0;
-                const amount = isIncome ? transaction.income : transaction.expense;
-                const amountClass = isIncome ? 'text-green-600' : 'text-red-600';
+                const isPemasukan = trans.jenis === 'pemasukan';
+                const amount = isPemasukan ? trans.pemasukan : trans.pengeluaran;
                 
-                transactionElement.innerHTML = `
-                    <div class="px-4 py-5 sm:p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
-                                <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'} text-white"></i>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dt class="text-sm font-medium text-gray-500 truncate">
-                                    ${transaction.description}
-                                </dt>
-                                <dd class="flex items-baseline">
-                                    <div class="text-2xl font-semibold ${amountClass}">
-                                        ${isIncome ? '+' : '-'}${formatCurrency(amount)}
-                                    </div>
-                                    <div class="ml-2 text-sm font-medium text-gray-500">
-                                        ${formatDate(transaction.date)}
-                                    </div>
-                                </dd>
-                            </div>
+                transElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-medium text-gray-800">${trans.uraian}</h3>
+                            <p class="text-sm text-gray-500">${formatDate(trans.tanggal)}</p>
                         </div>
-                        <div class="mt-4">
-                            <p class="text-sm text-gray-500">${transaction.notes || 'Tidak ada keterangan'}</p>
-                        </div>
+                        <span class="${isPemasukan ? 'text-green-600' : 'text-red-600'} font-medium">
+                            ${isPemasukan ? '+' : '-'}${formatCurrency(amount)}
+                        </span>
                     </div>
+                    ${trans.keterangan ? `<p class="mt-2 text-sm text-gray-600">${trans.keterangan}</p>` : ''}
                 `;
                 
-                container.appendChild(transactionElement);
+                transactionsList.appendChild(transElement);
             });
         }
 
-        // Show transaction form
-        function showTransactionForm(type) {
-            document.getElementById('transaction-type').value = type;
+        // Show transaction modal
+        function showTransactionModal(type) {
+            const modal = document.getElementById('transactionModal');
+            const title = document.getElementById('transactionTitle');
+            const typeSelect = document.getElementById('transactionType');
+            const amountLabel = document.getElementById('amountLabel');
             
-            const title = document.getElementById('transaction-title');
-            const amountField = document.getElementById('amount-field');
+            // Reset form
+            document.getElementById('transactionForm').reset();
+            document.getElementById('transactionId').value = '';
+            document.getElementById('transactionDate').value = new Date().toISOString().split('T')[0];
             
-            if (type === 'income') {
-                title.textContent = 'TAMBAH PEMASUKAN';
-                amountField.innerHTML = `
-                    <label for="transaction-amount" class="block text-sm font-medium text-gray-700">Jumlah Pemasukan</label>
-                    <input type="number" id="transaction-amount" name="amount" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="0">
-                `;
+            // Set type
+            typeSelect.value = type;
+            
+            if (type === 'pemasukan') {
+                title.textContent = 'Tambah Pemasukan';
+                amountLabel.textContent = 'Jumlah Pemasukan';
             } else {
-                title.textContent = 'TAMBAH PENGELUARAN';
-                amountField.innerHTML = `
-                    <label for="transaction-amount" class="block text-sm font-medium text-gray-700">Jumlah Pengeluaran</label>
-                    <input type="number" id="transaction-amount" name="amount" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="0">
-                `;
+                title.textContent = 'Tambah Pengeluaran';
+                amountLabel.textContent = 'Jumlah Pengeluaran';
             }
             
-            document.getElementById('transaction-modal').classList.remove('hidden');
+            modal.classList.remove('hidden');
         }
 
-        // Hide transaction form
-        function hideTransactionForm() {
-            document.getElementById('transaction-modal').classList.add('hidden');
-            document.getElementById('transaction-form').reset();
+        // Close transaction modal
+        function closeTransactionModal() {
+            transactionModal.classList.add('hidden');
         }
 
-        // Submit transaction
-        async function submitTransaction() {
-            const form = document.getElementById('transaction-form');
-            const formData = new FormData(form);
-            const type = document.getElementById('transaction-type').value;
-            const amount = document.getElementById('transaction-amount').value;
+        // Transaction form submission
+        document.getElementById('transactionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            if (!amount || parseFloat(amount) <= 0) {
-                alert('Jumlah harus lebih dari 0');
+            const formData = new FormData();
+            const transactionId = document.getElementById('transactionId').value;
+            const type = document.getElementById('transactionType').value;
+            const date = document.getElementById('transactionDate').value;
+            const uraian = document.getElementById('transactionUraian').value;
+            const amount = document.getElementById('transactionAmount').value;
+            const keterangan = document.getElementById('transactionKeterangan').value;
+            const photo = document.getElementById('transactionPhoto').files[0];
+            
+            // Validate
+            if (!uraian || !amount) {
+                alert('Uraian dan jumlah harus diisi');
                 return;
             }
             
-            // Prepare data for API
-            const transactionData = {
-                action: 'addTransaction',
-                date: formData.get('date'),
-                description: formData.get('description'),
-                income: type === 'income' ? parseFloat(amount) : 0,
-                expense: type === 'expense' ? parseFloat(amount) : 0,
-                notes: formData.get('notes'),
-                role: currentUser.role
-            };
+            // Prepare data
+            formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
+            if (transactionId) formData.append('id', transactionId);
+            formData.append('tanggal', date);
+            formData.append('uraian', uraian);
+            formData.append('keterangan', keterangan);
             
-            // Handle file upload if exists
-            const receiptFile = document.getElementById('transaction-receipt').files[0];
-            if (receiptFile) {
-                transactionData.receipt = receiptFile;
+            if (type === 'pemasukan') {
+                formData.append('pemasukan', amount);
+                formData.append('pengeluaran', '0');
+            } else {
+                formData.append('pemasukan', '0');
+                formData.append('pengeluaran', amount);
+            }
+            
+            if (photo) {
+                formData.append('photo', photo);
             }
             
             try {
-                // Create FormData for the request (to handle file upload)
-                const apiFormData = new FormData();
-                for (const key in transactionData) {
-                    apiFormData.append(key, transactionData[key]);
-                }
-                
-                const response = await fetch(API_ENDPOINT, {
+                const response = await fetch(endpoint, {
                     method: 'POST',
-                    body: apiFormData
+                    body: formData
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
                     alert('Transaksi berhasil disimpan');
-                    hideTransactionForm();
+                    closeTransactionModal();
                     await loadTransactions();
+                    await loadSaldo();
                 } else {
-                    alert('Gagal menyimpan transaksi: ' + data.message);
+                    alert('Gagal menyimpan transaksi: ' + (data.message || ''));
                 }
             } catch (error) {
-                console.error('Error submitting transaction:', error);
-                alert('Terjadi kesalahan saat menyimpan transaksi');
+                console.error('Error saving transaction:', error);
+                alert('Gagal menyimpan transaksi');
             }
+        });
+
+        // Show rekap modal
+        function showRekap() {
+            const modal = document.getElementById('rekapModal');
+            modal.classList.remove('hidden');
+            loadRekap();
         }
 
-        // Show report
-        function showReport() {
-            // Set default dates (current month)
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-            const lastDay = today.toISOString().split('T')[0];
-            
-            document.getElementById('report-start-date').value = firstDay;
-            document.getElementById('report-end-date').value = lastDay;
-            
-            document.getElementById('report-modal').classList.remove('hidden');
-            loadReport();
+        // Close rekap modal
+        function closeRekapModal() {
+            rekapModal.classList.add('hidden');
         }
 
-        // Hide report
-        function hideReport() {
-            document.getElementById('report-modal').classList.add('hidden');
-        }
-
-        // Load report data
-        async function loadReport() {
-            const startDate = document.getElementById('report-start-date').value;
-            const endDate = document.getElementById('report-end-date').value;
-            
-            if (!startDate || !endDate) {
-                alert('Harap pilih rentang tanggal');
-                return;
-            }
-            
+        // Load rekap data
+        async function loadRekap() {
             try {
-                const response = await fetch(`${API_ENDPOINT}?action=getReport&startDate=${startDate}&endDate=${endDate}`);
+                const startDate = document.getElementById('rekapStartDate').value;
+                const endDate = document.getElementById('rekapEndDate').value;
+                
+                const response = await fetch(`${endpoint}?action=getRekap&startDate=${startDate}&endDate=${endDate}`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    const transactions = data.transactions || [];
-                    const tableBody = document.getElementById('report-table-body');
-                    tableBody.innerHTML = '';
+                    renderRekapTable(data.data);
                     
-                    if (transactions.length === 0) {
-                        tableBody.innerHTML = `
-                            <tr>
-                                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada transaksi dalam rentang tanggal ini</td>
-                            </tr>
-                        `;
-                        return;
-                    }
+                    // Calculate summary
+                    const totalPemasukan = data.data.reduce((sum, trans) => sum + parseFloat(trans.pemasukan), 0);
+                    const totalPengeluaran = data.data.reduce((sum, trans) => sum + parseFloat(trans.pengeluaran), 0);
                     
-                    transactions.forEach(transaction => {
-                        const row = document.createElement('tr');
-                        
-                        row.innerHTML = `
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(transaction.date)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${transaction.description}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">${transaction.income > 0 ? formatCurrency(transaction.income) : '-'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">${transaction.expense > 0 ? formatCurrency(transaction.expense) : '-'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${transaction.balance > 0 ? 'text-green-600' : transaction.balance < 0 ? 'text-red-600' : 'text-gray-900'}">${formatCurrency(transaction.balance)}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">${transaction.notes || '-'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                ${currentUser.role === 'Bendahara' ? `
-                                <button onclick="showEditForm('${transaction.id}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                                <button onclick="deleteTransaction('${transaction.id}')" class="text-red-600 hover:text-red-900">Hapus</button>
-                                ` : '-'}
-                            </td>
-                        `;
-                        
-                        tableBody.appendChild(row);
-                    });
-                } else {
-                    alert('Gagal memuat laporan: ' + data.message);
+                    document.getElementById('rekapSummary').innerHTML = `
+                        <p>Total Pemasukan: <span class="font-medium text-green-600">+${formatCurrency(totalPemasukan)}</span></p>
+                        <p>Total Pengeluaran: <span class="font-medium text-red-600">-${formatCurrency(totalPengeluaran)}</span></p>
+                        <p>Saldo Akhir: <span class="font-medium text-indigo-600">${formatCurrency(currentSaldo)}</span></p>
+                    `;
                 }
             } catch (error) {
-                console.error('Error loading report:', error);
-                alert('Terjadi kesalahan saat memuat laporan');
+                console.error('Error loading rekap:', error);
+                alert('Gagal memuat rekap transaksi');
             }
         }
 
-        // Show edit form
-        async function showEditForm(transactionId) {
+        // Render rekap table
+        function renderRekapTable(data) {
+            const tableBody = document.getElementById('rekapTableBody');
+            tableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">Tidak ada data transaksi</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            data.forEach(trans => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(trans.tanggal)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${trans.uraian}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">${trans.pemasukan > 0 ? formatCurrency(trans.pemasukan) : '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">${trans.pengeluaran > 0 ? formatCurrency(trans.pengeluaran) : '-'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${trans.keterangan || '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(trans.saldo)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="actionCell-${trans.id}">
+                        ${currentUser.role === 'Bendahara' ? `
+                            <button onclick="editTransaction('${trans.id}')" class="text-indigo-600 hover:text-indigo-900 mr-2">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteTransaction('${trans.id}')" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : '-'}
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Edit transaction
+        async function editTransaction(id) {
             try {
-                const response = await fetch(`${API_ENDPOINT}?action=getTransaction&id=${transactionId}`);
-                const data = await response.json();
-                
-                if (data.success && data.transaction) {
-                    const transaction = data.transaction;
-                    
-                    // Fill the form
-                    document.getElementById('edit-id').value = transaction.id;
-                    document.getElementById('edit-date').value = transaction.date;
-                    document.getElementById('edit-description').value = transaction.description;
-                    document.getElementById('edit-income').value = transaction.income;
-                    document.getElementById('edit-expense').value = transaction.expense;
-                    document.getElementById('edit-notes').value = transaction.notes || '';
-                    
-                    // Show receipt if exists
-                    const receiptContainer = document.getElementById('edit-receipt-container');
-                    receiptContainer.innerHTML = '';
-                    
-                    if (transaction.receiptUrl) {
-                        receiptContainer.innerHTML = `
-                            <label class="block text-sm font-medium text-gray-700">Foto Barang Saat Ini</label>
-                            <img src="${transaction.receiptUrl}" alt="Foto Barang" class="mt-2 max-w-xs h-auto">
-                        `;
-                    }
-                    
-                    document.getElementById('edit-modal').classList.remove('hidden');
-                } else {
-                    alert('Gagal memuat data transaksi: ' + (data.message || 'Transaksi tidak ditemukan'));
-                }
-            } catch (error) {
-                console.error('Error loading transaction for edit:', error);
-                alert('Terjadi kesalahan saat memuat data transaksi');
-            }
-        }
-
-        // Hide edit form
-        function hideEditForm() {
-            document.getElementById('edit-modal').classList.add('hidden');
-            document.getElementById('edit-form').reset();
-            document.getElementById('edit-receipt-container').innerHTML = '';
-        }
-
-        // Update transaction
-        async function updateTransaction() {
-            const id = document.getElementById('edit-id').value;
-            const date = document.getElementById('edit-date').value;
-            const description = document.getElementById('edit-description').value;
-            const income = parseFloat(document.getElementById('edit-income').value) || 0;
-            const expense = parseFloat(document.getElementById('edit-expense').value) || 0;
-            const notes = document.getElementById('edit-notes').value;
-            
-            if (!date || !description) {
-                alert('Tanggal dan uraian harus diisi');
-                return;
-            }
-            
-            if (income < 0 || expense < 0) {
-                alert('Jumlah pemasukan/pengeluaran tidak boleh negatif');
-                return;
-            }
-            
-            if (income > 0 && expense > 0) {
-                alert('Transaksi tidak boleh memiliki pemasukan dan pengeluaran sekaligus');
-                return;
-            }
-            
-            const transactionData = {
-                action: 'updateTransaction',
-                id: id,
-                date: date,
-                description: description,
-                income: income,
-                expense: expense,
-                notes: notes,
-                role: currentUser.role
-            };
-            
-            // Handle file upload if exists
-            const receiptFile = document.getElementById('edit-receipt').files[0];
-            if (receiptFile) {
-                transactionData.receipt = receiptFile;
-            }
-            
-            try {
-                // Create FormData for the request (to handle file upload)
-                const apiFormData = new FormData();
-                for (const key in transactionData) {
-                    apiFormData.append(key, transactionData[key]);
-                }
-                
-                const response = await fetch(API_ENDPOINT, {
-                    method: 'POST',
-                    body: apiFormData
-                });
-                
+                const response = await fetch(`${endpoint}?action=getTransaction&id=${id}`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert('Transaksi berhasil diperbarui');
-                    hideEditForm();
-                    await loadTransactions();
-                    await loadReport(); // Refresh report if open
-                } else {
-                    alert('Gagal memperbarui transaksi: ' + data.message);
+                    const trans = data.data;
+                    const modal = document.getElementById('transactionModal');
+                    const title = document.getElementById('transactionTitle');
+                    const typeSelect = document.getElementById('transactionType');
+                    const amountLabel = document.getElementById('amountLabel');
+                    
+                    // Fill form
+                    document.getElementById('transactionId').value = trans.id;
+                    document.getElementById('transactionDate').value = trans.tanggal;
+                    document.getElementById('transactionUraian').value = trans.uraian;
+                    document.getElementById('transactionKeterangan').value = trans.keterangan || '';
+                    
+                    // Set type and amount
+                    if (parseFloat(trans.pemasukan) > 0) {
+                        typeSelect.value = 'pemasukan';
+                        title.textContent = 'Edit Pemasukan';
+                        amountLabel.textContent = 'Jumlah Pemasukan';
+                        document.getElementById('transactionAmount').value = trans.pemasukan;
+                    } else {
+                        typeSelect.value = 'pengeluaran';
+                        title.textContent = 'Edit Pengeluaran';
+                        amountLabel.textContent = 'Jumlah Pengeluaran';
+                        document.getElementById('transactionAmount').value = trans.pengeluaran;
+                    }
+                    
+                    modal.classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Error updating transaction:', error);
-                alert('Terjadi kesalahan saat memperbarui transaksi');
+                console.error('Error editing transaction:', error);
+                alert('Gagal memuat data transaksi untuk diedit');
             }
         }
 
         // Delete transaction
-        async function deleteTransaction(transactionId) {
-            if (!confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
-                return;
-            }
+        async function deleteTransaction(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) return;
             
             try {
-                const response = await fetch(API_ENDPOINT, {
+                const formData = new FormData();
+                formData.append('action', 'deleteTransaction');
+                formData.append('id', id);
+                
+                const response = await fetch(endpoint, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=deleteTransaction&id=${transactionId}&role=${currentUser.role}`
+                    body: formData
                 });
                 
                 const data = await response.json();
@@ -729,25 +617,44 @@
                 if (data.success) {
                     alert('Transaksi berhasil dihapus');
                     await loadTransactions();
-                    await loadReport(); // Refresh report if open
+                    await loadSaldo();
+                    loadRekap();
                 } else {
-                    alert('Gagal menghapus transaksi: ' + data.message);
+                    alert('Gagal menghapus transaksi');
                 }
             } catch (error) {
                 console.error('Error deleting transaction:', error);
-                alert('Terjadi kesalahan saat menghapus transaksi');
+                alert('Gagal menghapus transaksi');
             }
         }
 
-        // Helper function to format currency
+        // Logout
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('kasUmumUser');
+            
+            // Hide all sections
+            saldoSection.classList.add('hidden');
+            actionButtons.classList.add('hidden');
+            lastTransactions.classList.add('hidden');
+            
+            // Show login modal
+            showLoginModal();
+        }
+
+        // Helper functions
         function formatCurrency(amount) {
             return 'Rp' + parseFloat(amount).toLocaleString('id-ID');
         }
 
-        // Helper function to format date
         function formatDate(dateString) {
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
             return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        function getFirstDayOfMonth() {
+            const date = new Date();
+            return new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
         }
     </script>
 </body>
