@@ -186,7 +186,8 @@
         let currentSaldo = 0;
         let appConfig = {};
         const endpoint = "https://script.google.com/macros/s/AKfycbxKy9CplLBPAZvLNgQ-A59G2bzj0xQ14dx9I4rFkMpqzNt1ow8cFr2QMobP9Q8NjiYWpA/exec";
-
+// Ganti dengan URL endpoint Google Apps Script Anda
+const API_ENDPOINT = "https://script.google.com/macros/s/AKfycbxKy9CplLBPAZvLNgQ-A59G2bzj0xQ14dx9I4rFkMpqzNt1ow8cFr2QMobP9Q8NjiYWpA/exec";
         // DOM elements
         const loginModal = document.getElementById('loginModal');
         const saldoSection = document.getElementById('saldoSection');
@@ -216,10 +217,8 @@
             document.getElementById('rekapEndDate').value = today;
         });
 
-        // Load app configuration
-        async function loadAppConfig() {
+async function loadAppConfig() {
   try {
-    // Gunakan POST request dengan FormData
     const formData = new FormData();
     formData.append('action', 'getConfig');
     
@@ -258,7 +257,7 @@
     }
   } catch (error) {
     console.error('Error loading app config:', error);
-    alert('Gagal memuat konfigurasi aplikasi');
+    alert('Gagal memuat konfigurasi aplikasi. Silakan cek konsol untuk detail error.');
   }
 }
         // Show login modal
