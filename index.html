@@ -1212,67 +1212,68 @@ document.querySelector('.file-input-button').addEventListener('click', function(
             }
         }
         
-        // Handle transaction submit
-        async function handleTransactionSubmit(e) {
-            e.preventDefault();
-            
-            const transactionId = document.getElementById('transactionId').value;
-            const date = document.getElementById('transactionDate').value;
-            const description = document.getElementById('transactionDescription').value.trim();
-            const amount = document.getElementById('transactionAmount').value;
-            const notes = document.getElementById('transactionNotes').value.trim();
-            const imageFile = document.getElementById('transactionImage').files[0];
-            const existingImage = document.getElementById('existingImage').value;
-            
-            if (!date || !description || !amount || amount <= 0) {
-                alert('Mohon lengkapi semua field dengan benar');
-                return;
-            }
-            
-            try {
-    loadingOverlay.classList.remove('hidden');
-    hideTransactionModal();
+// Ganti fungsi handleTransactionSubmit dengan ini:
+async function handleTransactionSubmit(e) {
+    e.preventDefault();
     
-    const formData = new FormData();
-    formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
-    formData.append('date', date);
-    formData.append('description', description);
-    formData.append('type', currentTransactionType);
-    formData.append('amount', amount);
-    formData.append('notes', notes);
-    formData.append('username', currentUser.username);
+    const transactionId = document.getElementById('transactionId').value;
+    const date = document.getElementById('transactionDate').value;
+    const description = document.getElementById('transactionDescription').value.trim();
+    const amount = document.getElementById('transactionAmount').value;
+    const notes = document.getElementById('transactionNotes').value.trim();
+    const imageFile = document.getElementById('transactionImage').files[0];
+    const existingImage = document.getElementById('existingImage').value;
     
-    if (transactionId) {
-      formData.append('transactionId', transactionId);
+    if (!date || !description || !amount || amount <= 0) {
+        alert('Mohon lengkapi semua field dengan benar');
+        return;
     }
     
-    if (imageFile) {
-      formData.append('image', imageFile); // Send the file directly
-    } else if (existingImage) {
-      formData.append('existingImage', existingImage);
-    }
-    
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      body: formData
-    });    
-                const data = await response.json();
-                
-                if (data.success) {
-                    showNotification(transactionId ? 'Transaksi berhasil diperbarui!' : 'Transaksi berhasil disimpan!', true);
-                    showDashboard(); // Refresh data
-                } else {
-                    showNotification(data.message || (transactionId ? "Gagal memperbarui transaksi" : "Gagal menyimpan transaksi"), false);
-                }
-            } catch (error) {
-                console.error("Transaction error:", error);
-                showNotification("Terjadi kesalahan saat memproses transaksi", false);
-            } finally {
-                loadingOverlay.classList.add('hidden');
-                document.getElementById('transactionId').value = ''; // Clear transaction ID
-            }
+    try {
+        loadingOverlay.classList.remove('hidden');
+        hideTransactionModal();
+        
+        const formData = new FormData();
+        formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
+        formData.append('date', date);
+        formData.append('description', description);
+        formData.append('type', currentTransactionType);
+        formData.append('amount', amount);
+        formData.append('notes', notes);
+        formData.append('username', currentUser.username);
+        
+        if (transactionId) {
+            formData.append('transactionId', transactionId);
         }
         
+        // Handle image upload - kirim file langsung
+        if (imageFile) {
+            formData.append('image', imageFile);
+        } else if (existingImage) {
+            formData.append('existingImage', existingImage);
+        }
+        
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(transactionId ? 'Transaksi berhasil diperbarui!' : 'Transaksi berhasil disimpan!', true);
+            showDashboard(); // Refresh data
+        } else {
+            showNotification(data.message || (transactionId ? "Gagal memperbarui transaksi" : "Gagal menyimpan transaksi"), false);
+        }
+    } catch (error) {
+        console.error("Transaction error:", error);
+        showNotification("Terjadi kesalahan saat memproses transaksi", false);
+    } finally {
+        loadingOverlay.classList.add('hidden');
+        document.getElementById('transactionId').value = ''; // Clear transaction ID
+    }
+}        
         // Show recap modal
         function showRecapModal() {
             // Reset filters
