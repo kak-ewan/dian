@@ -6,8 +6,23 @@
     <title>KAS UMUM</title>
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .transaction-card {
+            transition: all 0.3s ease;
+        }
+        .transaction-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .loading-spinner {
+            display: none;
+        }
+        .loading-spinner.active {
+            display: block;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 font-sans">
     <!-- Login Modal -->
     <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-md">
@@ -39,42 +54,59 @@
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-gray-700">Memuat data...</p>
+            </div>
+        </div>
+
         <!-- Header -->
         <header class="text-center mb-8">
             <div id="logoContainer" class="flex justify-center mb-4">
-                <img id="logo" src="" alt="Logo" class="h-24">
+                <i class="fas fa-piggy-bank text-6xl text-indigo-500"></i>
             </div>
             <h1 class="text-3xl font-bold text-gray-800">KAS UMUM</h1>
-            <p id="description" class="text-gray-600 mt-2"></p>
+            <p id="description" class="text-gray-600 mt-2">Sistem pencatatan keuangan sekolah</p>
         </header>
 
         <!-- Saldo Section -->
         <div id="saldoSection" class="bg-white rounded-lg shadow-md p-6 mb-8 text-center hidden">
             <h2 class="text-lg font-semibold text-gray-700 mb-2">Saldo Saat Ini</h2>
             <p id="saldo" class="text-4xl font-bold text-indigo-600">Rp0</p>
+            <p id="lastUpdate" class="text-sm text-gray-500 mt-2">-</p>
         </div>
 
         <!-- Action Buttons -->
-        <div id="actionButtons" class="flex justify-center space-x-4 mb-8 hidden">
-            <button onclick="showTransactionModal('pemasukan')" class="bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg font-medium">
+        <div id="actionButtons" class="flex flex-wrap justify-center gap-4 mb-8 hidden">
+            <button onclick="showTransactionModal('pemasukan')" class="bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg font-medium flex items-center">
                 <i class="fas fa-plus mr-2"></i>Pemasukan
             </button>
-            <button onclick="showTransactionModal('pengeluaran')" class="bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg font-medium">
+            <button onclick="showTransactionModal('pengeluaran')" class="bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg font-medium flex items-center">
                 <i class="fas fa-minus mr-2"></i>Pengeluaran
             </button>
-            <button onclick="showRekap()" class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium">
+            <button onclick="showRekap()" class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center">
                 <i class="fas fa-file-alt mr-2"></i>Rekap
             </button>
-            <button onclick="logout()" class="bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg font-medium">
+            <button onclick="logout()" class="bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg font-medium flex items-center">
                 <i class="fas fa-sign-out-alt mr-2"></i>Logout
             </button>
         </div>
 
         <!-- Last Transactions -->
         <div id="lastTransactions" class="mb-8 hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">3 Transaksi Terakhir</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">3 Transaksi Terakhir</h2>
+                <button onclick="refreshData()" class="text-indigo-600 hover:text-indigo-800 flex items-center">
+                    <i class="fas fa-sync-alt mr-1"></i> Refresh
+                </button>
+            </div>
             <div id="transactionsList" class="space-y-4">
-                <!-- Transactions will be loaded here -->
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                    <p>Memuat data transaksi...</p>
+                </div>
             </div>
         </div>
 
@@ -115,12 +147,13 @@
                     <div>
                         <label for="transactionPhoto" class="block text-sm font-medium text-gray-700">Foto Barang (Opsional)</label>
                         <input type="file" id="transactionPhoto" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <p class="mt-1 text-sm text-gray-500">Ukuran maksimal 2MB (format JPG/PNG)</p>
                     </div>
                     <div class="flex justify-end space-x-3">
                         <button type="button" onclick="closeTransactionModal()" class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Batal
                         </button>
-                        <button type="submit" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button type="submit" id="submitTransactionBtn" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Simpan
                         </button>
                     </div>
@@ -129,26 +162,28 @@
         </div>
 
         <!-- Rekap Modal -->
-        <div id="rekapModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden overflow-y-auto">
-            <div class="bg-white rounded-lg p-6 w-full max-w-4xl max-h-screen my-8">
+        <div id="rekapModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden overflow-y-auto p-4">
+            <div class="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-auto">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold">Rekap Transaksi</h2>
                     <button onclick="closeRekapModal()" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="mb-4 flex justify-between">
-                    <div>
+                <div class="mb-4 flex flex-wrap justify-between gap-4">
+                    <div class="flex-1 min-w-[200px]">
                         <label for="rekapStartDate" class="block text-sm font-medium text-gray-700">Dari Tanggal</label>
-                        <input type="date" id="rekapStartDate" class="mt-1 border border-gray-300 rounded-md shadow-sm py-1 px-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="date" id="rekapStartDate" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                    <div>
+                    <div class="flex-1 min-w-[200px]">
                         <label for="rekapEndDate" class="block text-sm font-medium text-gray-700">Sampai Tanggal</label>
-                        <input type="date" id="rekapEndDate" class="mt-1 border border-gray-300 rounded-md shadow-sm py-1 px-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="date" id="rekapEndDate" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                    <button onclick="loadRekap()" class="self-end py-1 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Filter
-                    </button>
+                    <div class="self-end">
+                        <button onclick="loadRekap()" class="py-1 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 h-[34px]">
+                            Filter
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -160,16 +195,20 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengeluaran</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" id="actionColumnHeader">Aksi</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="rekapTableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- Rekap data will be loaded here -->
+                            <tr>
+                                <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                    <i class="fas fa-spinner fa-spin mr-2"></i> Memuat data...
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-4 flex justify-between items-center">
-                    <div id="rekapSummary" class="text-sm text-gray-600"></div>
+                <div class="mt-4 flex flex-wrap justify-between items-center gap-4">
+                    <div id="rekapSummary" class="text-sm text-gray-600 space-y-1"></div>
                     <button onclick="closeRekapModal()" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Tutup
                     </button>
@@ -179,133 +218,76 @@
     </div>
 
     <script>
-        // Global variables
+        // Konfigurasi Aplikasi
+        const API_ENDPOINT = "https://script.google.com/macros/s/AKfycbyoxIdD_Qb2AAnSE7iyJtP5XlO3AACPTHKbs32qJ-naOUegSJBYYLTUGRjU_PtDme12/exec";
+        
+        // Variabel Global
         let currentUser = null;
         let users = [];
         let transactions = [];
         let currentSaldo = 0;
         let appConfig = {};
-        const endpoint = "https://script.google.com/macros/s/AKfycbxKy9CplLBPAZvLNgQ-A59G2bzj0xQ14dx9I4rFkMpqzNt1ow8cFr2QMobP9Q8NjiYWpA/exec";
-// Ganti dengan URL endpoint Google Apps Script Anda
-const API_ENDPOINT = "https://script.google.com/macros/s/AKfycbxKy9CplLBPAZvLNgQ-A59G2bzj0xQ14dx9I4rFkMpqzNt1ow8cFr2QMobP9Q8NjiYWpA/exec";
-        // DOM elements
+        
+        // DOM Elements
+        const loadingSpinner = document.getElementById('loadingSpinner');
         const loginModal = document.getElementById('loginModal');
         const saldoSection = document.getElementById('saldoSection');
         const actionButtons = document.getElementById('actionButtons');
         const lastTransactions = document.getElementById('lastTransactions');
         const transactionModal = document.getElementById('transactionModal');
         const rekapModal = document.getElementById('rekapModal');
-
+        
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already logged in
-            const savedUser = localStorage.getItem('kasUmumUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                initializeApp();
-            } else {
-                showLoginModal();
-            }
-
-            // Load app config (logo, description, etc.)
-            loadAppConfig();
-
             // Set default dates
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('transactionDate').value = today;
             document.getElementById('rekapStartDate').value = getFirstDayOfMonth();
             document.getElementById('rekapEndDate').value = today;
-        });
-
-async function loadAppConfig() {
-  try {
-    const formData = new FormData();
-    formData.append('action', 'getConfig');
-    
-    const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      body: formData
-    });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      appConfig = data.data;
-      
-      // Set logo
-      const logo = document.getElementById('logo');
-      if (appConfig.logo) {
-        logo.src = appConfig.logo;
-      } else {
-        document.getElementById('logoContainer').innerHTML = '<i class="fas fa-piggy-bank text-6xl text-indigo-500"></i>';
-      }
-      
-      // Set description
-      document.getElementById('description').textContent = appConfig.description || 'Sistem pencatatan keuangan umum';
-      
-      // Load users
-      users = appConfig.users || [];
-      const usernameSelect = document.getElementById('username');
-      usernameSelect.innerHTML = '<option value="">Pilih User</option>';
-      
-      users.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.username;
-        option.textContent = `${user.nama} (${user.role})`;
-        usernameSelect.appendChild(option);
-      });
-    }
-  } catch (error) {
-    console.error('Error loading app config:', error);
-    alert('Gagal memuat konfigurasi aplikasi. Silakan cek konsol untuk detail error.');
-  }
-}
-        // Show login modal
-        function showLoginModal() {
-            loginModal.classList.remove('hidden');
-        }
-
-        // Close login modal
-        function closeLoginModal() {
-            loginModal.classList.add('hidden');
-        }
-
-        // Login form submission
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            const user = users.find(u => u.username === username && u.password === password);
-            
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('kasUmumUser', JSON.stringify(user));
-                closeLoginModal();
-                initializeApp();
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('kasUmumUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    initializeApp();
+                } catch (e) {
+                    localStorage.removeItem('kasUmumUser');
+                    showLoginModal();
+                }
             } else {
-                alert('Username atau password salah');
+                showLoginModal();
             }
         });
-
-        // Initialize app after login
+        
+        // ==================== FUNGSI UTAMA ====================
+        
         async function initializeApp() {
-            // Load transactions and saldo
-            await loadTransactions();
-            await loadSaldo();
-            
-            // Show/hide elements based on user role
-            saldoSection.classList.remove('hidden');
-            actionButtons.classList.remove('hidden');
-            
-            if (currentUser.role === 'Bendahara') {
-                lastTransactions.classList.remove('hidden');
-            } else {
-                lastTransactions.classList.add('hidden');
+            showLoading();
+            try {
+                await loadAppConfig();
+                await loadSaldo();
+                await loadTransactions();
+                
+                // Update UI based on role
+                updateUIBasedOnRole();
+                
+                // Hide loading and show content
+                hideLoading();
+                saldoSection.classList.remove('hidden');
+                actionButtons.classList.remove('hidden');
+                
+                if (currentUser.role === 'Bendahara') {
+                    lastTransactions.classList.remove('hidden');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Initialize error:', error);
+                alert('Gagal memuat data awal. Silakan refresh halaman.');
             }
-            
-            // Update UI based on role
+        }
+        
+        function updateUIBasedOnRole() {
             const pemasukanBtn = actionButtons.querySelector('button:first-child');
             const pengeluaranBtn = actionButtons.querySelector('button:nth-child(2)');
             
@@ -317,58 +299,133 @@ async function loadAppConfig() {
                 pengeluaranBtn.classList.remove('hidden');
             }
         }
-
-        // Load transactions
+        
+        // ==================== FUNGSI API ====================
+        
+        async function callApi(action, data = {}) {
+            try {
+                const formData = new FormData();
+                formData.append('action', action);
+                
+                // Append all data to formData
+                for (const key in data) {
+                    if (data[key] !== undefined && data[key] !== null) {
+                        formData.append(key, data[key]);
+                    }
+                }
+                
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error(`API call failed for action ${action}:`, error);
+                throw error;
+            }
+        }
+        
+        async function loadAppConfig() {
+            try {
+                const result = await callApi('getConfig');
+                if (result.success) {
+                    appConfig = result.data;
+                    
+                    // Update logo
+                    const logoContainer = document.getElementById('logoContainer');
+                    if (appConfig.logo) {
+                        logoContainer.innerHTML = `<img src="${appConfig.logo}" alt="Logo" class="h-24">`;
+                    }
+                    
+                    // Update description
+                    document.getElementById('description').textContent = appConfig.description || 'Sistem pencatatan keuangan sekolah';
+                    
+                    // Load users
+                    users = appConfig.users || [];
+                    const usernameSelect = document.getElementById('username');
+                    usernameSelect.innerHTML = '<option value="">Pilih User</option>';
+                    
+                    users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.username;
+                        option.textContent = `${user.nama} (${user.role})`;
+                        usernameSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading app config:', error);
+                throw new Error('Gagal memuat konfigurasi aplikasi');
+            }
+        }
+        
+        async function loadSaldo() {
+            try {
+                const result = await callApi('getSaldo');
+                if (result.success) {
+                    currentSaldo = result.saldo;
+                    document.getElementById('saldo').textContent = formatCurrency(currentSaldo);
+                    document.getElementById('lastUpdate').textContent = `Terakhir diperbarui: ${formatDateTime(new Date())}`;
+                }
+            } catch (error) {
+                console.error('Error loading saldo:', error);
+                throw new Error('Gagal memuat saldo');
+            }
+        }
+        
         async function loadTransactions() {
             try {
-                const response = await fetch(`${endpoint}?action=getTransactions`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    transactions = data.data;
+                const result = await callApi('getTransactions');
+                if (result.success) {
+                    transactions = result.data;
                     renderLastTransactions();
                 }
             } catch (error) {
                 console.error('Error loading transactions:', error);
-                alert('Gagal memuat transaksi');
+                throw new Error('Gagal memuat transaksi');
             }
         }
-
-        // Load saldo
-        async function loadSaldo() {
+        
+        async function refreshData() {
+            showLoading();
             try {
-                const response = await fetch(`${endpoint}?action=getSaldo`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    currentSaldo = data.saldo;
-                    document.getElementById('saldo').textContent = formatCurrency(currentSaldo);
-                }
+                await Promise.all([loadSaldo(), loadTransactions()]);
             } catch (error) {
-                console.error('Error loading saldo:', error);
-                alert('Gagal memuat saldo');
+                console.error('Refresh error:', error);
+                alert('Gagal menyegarkan data');
+            } finally {
+                hideLoading();
             }
         }
-
-        // Render last 3 transactions
+        
+        // ==================== FUNGSI TAMPILAN ====================
+        
         function renderLastTransactions() {
             const transactionsList = document.getElementById('transactionsList');
-            transactionsList.innerHTML = '';
             
-            const lastThree = transactions.slice(0, 3);
-            
-            if (lastThree.length === 0) {
-                transactionsList.innerHTML = '<p class="text-gray-500">Belum ada transaksi</p>';
+            if (!transactions || transactions.length === 0) {
+                transactionsList.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-4 text-center text-gray-500">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>Belum ada transaksi</p>
+                    </div>
+                `;
                 return;
             }
             
+            const lastThree = transactions.slice(0, 3);
+            transactionsList.innerHTML = '';
+            
             lastThree.forEach(trans => {
-                const transElement = document.createElement('div');
-                transElement.className = 'bg-white rounded-lg shadow p-4';
-                
-                const isPemasukan = trans.jenis === 'pemasukan';
+                const isPemasukan = trans.pemasukan > 0;
                 const amount = isPemasukan ? trans.pemasukan : trans.pengeluaran;
                 
+                const transElement = document.createElement('div');
+                transElement.className = 'bg-white rounded-lg shadow p-4 transaction-card';
                 transElement.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
@@ -380,13 +437,27 @@ async function loadAppConfig() {
                         </span>
                     </div>
                     ${trans.keterangan ? `<p class="mt-2 text-sm text-gray-600">${trans.keterangan}</p>` : ''}
+                    ${trans.photo ? `<div class="mt-2">
+                        <a href="${trans.photo}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-sm">
+                            <i class="fas fa-image mr-1"></i> Lihat Bukti
+                        </a>
+                    </div>` : ''}
                 `;
                 
                 transactionsList.appendChild(transElement);
             });
         }
-
-        // Show transaction modal
+        
+        // ==================== FUNGSI MODAL ====================
+        
+        function showLoginModal() {
+            loginModal.classList.remove('hidden');
+        }
+        
+        function closeLoginModal() {
+            loginModal.classList.add('hidden');
+        }
+        
         function showTransactionModal(type) {
             const modal = document.getElementById('transactionModal');
             const title = document.getElementById('transactionTitle');
@@ -411,128 +482,60 @@ async function loadAppConfig() {
             
             modal.classList.remove('hidden');
         }
-
-        // Close transaction modal
+        
         function closeTransactionModal() {
             transactionModal.classList.add('hidden');
         }
-
-        // Transaction form submission
-        document.getElementById('transactionForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData();
-            const transactionId = document.getElementById('transactionId').value;
-            const type = document.getElementById('transactionType').value;
-            const date = document.getElementById('transactionDate').value;
-            const uraian = document.getElementById('transactionUraian').value;
-            const amount = document.getElementById('transactionAmount').value;
-            const keterangan = document.getElementById('transactionKeterangan').value;
-            const photo = document.getElementById('transactionPhoto').files[0];
-            
-            // Validate
-            if (!uraian || !amount) {
-                alert('Uraian dan jumlah harus diisi');
-                return;
-            }
-            
-            // Prepare data
-            formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
-            if (transactionId) formData.append('id', transactionId);
-            formData.append('tanggal', date);
-            formData.append('uraian', uraian);
-            formData.append('keterangan', keterangan);
-            
-            if (type === 'pemasukan') {
-                formData.append('pemasukan', amount);
-                formData.append('pengeluaran', '0');
-            } else {
-                formData.append('pemasukan', '0');
-                formData.append('pengeluaran', amount);
-            }
-            
-            if (photo) {
-                formData.append('photo', photo);
-            }
-            
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert('Transaksi berhasil disimpan');
-                    closeTransactionModal();
-                    await loadTransactions();
-                    await loadSaldo();
-                } else {
-                    alert('Gagal menyimpan transaksi: ' + (data.message || ''));
-                }
-            } catch (error) {
-                console.error('Error saving transaction:', error);
-                alert('Gagal menyimpan transaksi');
-            }
-        });
-
-        // Show rekap modal
+        
         function showRekap() {
             const modal = document.getElementById('rekapModal');
             modal.classList.remove('hidden');
             loadRekap();
         }
-
-        // Close rekap modal
+        
         function closeRekapModal() {
             rekapModal.classList.add('hidden');
         }
-
-        // Load rekap data
+        
         async function loadRekap() {
+            showLoading();
             try {
                 const startDate = document.getElementById('rekapStartDate').value;
                 const endDate = document.getElementById('rekapEndDate').value;
                 
-                const response = await fetch(`${endpoint}?action=getRekap&startDate=${startDate}&endDate=${endDate}`);
-                const data = await response.json();
+                const result = await callApi('getRekap', { startDate, endDate });
                 
-                if (data.success) {
-                    renderRekapTable(data.data);
-                    
-                    // Calculate summary
-                    const totalPemasukan = data.data.reduce((sum, trans) => sum + parseFloat(trans.pemasukan), 0);
-                    const totalPengeluaran = data.data.reduce((sum, trans) => sum + parseFloat(trans.pengeluaran), 0);
-                    
-                    document.getElementById('rekapSummary').innerHTML = `
-                        <p>Total Pemasukan: <span class="font-medium text-green-600">+${formatCurrency(totalPemasukan)}</span></p>
-                        <p>Total Pengeluaran: <span class="font-medium text-red-600">-${formatCurrency(totalPengeluaran)}</span></p>
-                        <p>Saldo Akhir: <span class="font-medium text-indigo-600">${formatCurrency(currentSaldo)}</span></p>
-                    `;
+                if (result.success) {
+                    renderRekapTable(result.data);
+                    updateRekapSummary(result.data);
                 }
             } catch (error) {
                 console.error('Error loading rekap:', error);
                 alert('Gagal memuat rekap transaksi');
+            } finally {
+                hideLoading();
             }
         }
-
-        // Render rekap table
+        
         function renderRekapTable(data) {
             const tableBody = document.getElementById('rekapTableBody');
-            tableBody.innerHTML = '';
             
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">Tidak ada data transaksi</td>
+                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                            <i class="fas fa-inbox mr-2"></i> Tidak ada data transaksi
+                        </td>
                     </tr>
                 `;
                 return;
             }
             
+            tableBody.innerHTML = '';
+            
             data.forEach(trans => {
                 const row = document.createElement('tr');
+                const isPemasukan = trans.pemasukan > 0;
                 
                 row.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(trans.tanggal)}</td>
@@ -543,10 +546,10 @@ async function loadAppConfig() {
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(trans.saldo)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="actionCell-${trans.id}">
                         ${currentUser.role === 'Bendahara' ? `
-                            <button onclick="editTransaction('${trans.id}')" class="text-indigo-600 hover:text-indigo-900 mr-2">
+                            <button onclick="editTransaction('${trans.id}')" class="text-indigo-600 hover:text-indigo-900 mr-2" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button onclick="deleteTransaction('${trans.id}')" class="text-red-600 hover:text-red-900">
+                            <button onclick="confirmDeleteTransaction('${trans.id}')" class="text-red-600 hover:text-red-900" title="Hapus">
                                 <i class="fas fa-trash"></i>
                             </button>
                         ` : '-'}
@@ -556,15 +559,36 @@ async function loadAppConfig() {
                 tableBody.appendChild(row);
             });
         }
-
-        // Edit transaction
+        
+        function updateRekapSummary(data) {
+            const summaryElement = document.getElementById('rekapSummary');
+            
+            if (!data || data.length === 0) {
+                summaryElement.innerHTML = '<p>Tidak ada transaksi dalam rentang tanggal ini</p>';
+                return;
+            }
+            
+            const totalPemasukan = data.reduce((sum, trans) => sum + parseFloat(trans.pemasukan || 0), 0);
+            const totalPengeluaran = data.reduce((sum, trans) => sum + parseFloat(trans.pengeluaran || 0), 0);
+            const saldoAkhir = data.length > 0 ? data[data.length - 1].saldo : currentSaldo;
+            
+            summaryElement.innerHTML = `
+                <p>Total Pemasukan: <span class="font-medium text-green-600">+${formatCurrency(totalPemasukan)}</span></p>
+                <p>Total Pengeluaran: <span class="font-medium text-red-600">-${formatCurrency(totalPengeluaran)}</span></p>
+                <p>Saldo Akhir: <span class="font-medium text-indigo-600">${formatCurrency(saldoAkhir)}</span></p>
+                <p class="text-xs text-gray-500">Jumlah Transaksi: ${data.length}</p>
+            `;
+        }
+        
+        // ==================== FUNGSI TRANSAKSI ====================
+        
         async function editTransaction(id) {
+            showLoading();
             try {
-                const response = await fetch(`${endpoint}?action=getTransaction&id=${id}`);
-                const data = await response.json();
+                const result = await callApi('getTransaction', { id });
                 
-                if (data.success) {
-                    const trans = data.data;
+                if (result.success && result.data) {
+                    const trans = result.data;
                     const modal = document.getElementById('transactionModal');
                     const title = document.getElementById('transactionTitle');
                     const typeSelect = document.getElementById('transactionType');
@@ -590,44 +614,169 @@ async function loadAppConfig() {
                     }
                     
                     modal.classList.remove('hidden');
+                } else {
+                    throw new Error('Transaksi tidak ditemukan');
                 }
             } catch (error) {
                 console.error('Error editing transaction:', error);
                 alert('Gagal memuat data transaksi untuk diedit');
+            } finally {
+                hideLoading();
             }
         }
-
-        // Delete transaction
+        
+        function confirmDeleteTransaction(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
+                deleteTransaction(id);
+            }
+        }
+        
         async function deleteTransaction(id) {
-            if (!confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) return;
-            
+            showLoading();
             try {
-                const formData = new FormData();
-                formData.append('action', 'deleteTransaction');
-                formData.append('id', id);
+                const result = await callApi('deleteTransaction', { id });
                 
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
+                if (result.success) {
                     alert('Transaksi berhasil dihapus');
-                    await loadTransactions();
-                    await loadSaldo();
-                    loadRekap();
+                    await Promise.all([loadSaldo(), loadTransactions()]);
+                    if (rekapModal.classList.contains('hidden') === false) {
+                        await loadRekap();
+                    }
                 } else {
-                    alert('Gagal menghapus transaksi');
+                    throw new Error(result.message || 'Gagal menghapus transaksi');
                 }
             } catch (error) {
                 console.error('Error deleting transaction:', error);
-                alert('Gagal menghapus transaksi');
+                alert(error.message);
+            } finally {
+                hideLoading();
             }
         }
-
-        // Logout
+        
+        // ==================== EVENT HANDLERS ====================
+        
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('Username dan password harus diisi');
+                return;
+            }
+            
+            showLoading();
+            try {
+                const result = await callApi('login', { username, password });
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    localStorage.setItem('kasUmumUser', JSON.stringify(currentUser));
+                    closeLoginModal();
+                    await initializeApp();
+                } else {
+                    throw new Error(result.message || 'Login gagal');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert(error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        // Transaction form submission
+        document.getElementById('transactionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const transactionId = document.getElementById('transactionId').value;
+            const type = document.getElementById('transactionType').value;
+            const date = document.getElementById('transactionDate').value;
+            const uraian = document.getElementById('transactionUraian').value;
+            const amount = document.getElementById('transactionAmount').value;
+            const keterangan = document.getElementById('transactionKeterangan').value;
+            const photoInput = document.getElementById('transactionPhoto');
+            
+            // Validasi
+            if (!date || !uraian || !amount) {
+                alert('Tanggal, uraian, dan jumlah harus diisi');
+                return;
+            }
+            
+            // Prepare data
+            const data = {
+                tanggal: date,
+                uraian: uraian,
+                keterangan: keterangan,
+                created_by: currentUser.username
+            };
+            
+            if (type === 'pemasukan') {
+                data.pemasukan = amount;
+                data.pengeluaran = '0';
+            } else {
+                data.pemasukan = '0';
+                data.pengeluaran = amount;
+            }
+            
+            // Handle photo upload
+            if (photoInput.files.length > 0) {
+                const file = photoInput.files[0];
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file maksimal 2MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        data.photo = e.target.result;
+                        await saveTransaction(transactionId, data);
+                    } catch (error) {
+                        console.error('Error uploading photo:', error);
+                        alert('Gagal mengunggah foto');
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                await saveTransaction(transactionId, data);
+            }
+        });
+        
+        async function saveTransaction(id, data) {
+            const submitBtn = document.getElementById('submitTransactionBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+            
+            try {
+                let result;
+                if (id) {
+                    data.id = id;
+                    result = await callApi('updateTransaction', data);
+                } else {
+                    result = await callApi('addTransaction', data);
+                }
+                
+                if (result.success) {
+                    alert('Transaksi berhasil disimpan');
+                    closeTransactionModal();
+                    await Promise.all([loadSaldo(), loadTransactions()]);
+                } else {
+                    throw new Error(result.message || 'Gagal menyimpan transaksi');
+                }
+            } catch (error) {
+                console.error('Error saving transaction:', error);
+                alert(error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Simpan';
+            }
+        }
+        
+        // ==================== FUNGSI UMUM ====================
+        
         function logout() {
             currentUser = null;
             localStorage.removeItem('kasUmumUser');
@@ -640,17 +789,38 @@ async function loadAppConfig() {
             // Show login modal
             showLoginModal();
         }
-
-        // Helper functions
-        function formatCurrency(amount) {
-            return 'Rp' + parseFloat(amount).toLocaleString('id-ID');
+        
+        function showLoading() {
+            loadingSpinner.classList.add('active');
         }
-
+        
+        function hideLoading() {
+            loadingSpinner.classList.remove('active');
+        }
+        
+        function formatCurrency(amount) {
+            return 'Rp' + parseFloat(amount || 0).toLocaleString('id-ID');
+        }
+        
         function formatDate(dateString) {
+            if (!dateString) return '';
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
             return new Date(dateString).toLocaleDateString('id-ID', options);
         }
-
+        
+        function formatDateTime(date) {
+            if (!date) return '';
+            const options = { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            return new Date(date).toLocaleDateString('id-ID', options);
+        }
+        
         function getFirstDayOfMonth() {
             const date = new Date();
             return new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
