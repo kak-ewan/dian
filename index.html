@@ -613,11 +613,10 @@
             
             // Filter dropdowns
             setupFilterDropdowns();
-            
-            // Menghubungkan tombol upload dengan input file
-            document.querySelector('.file-input-button').addEventListener('click', function() {
-                document.getElementById('transactionImage').click();
-            });
+                        // Menghubungkan tombol upload dengan input file
+document.querySelector('.file-input-button').addEventListener('click', function() {
+    document.getElementById('transactionImage').click();
+});
             
             // Edit and delete buttons (delegated events)
             document.addEventListener('click', function(e) {
@@ -1213,96 +1212,68 @@
             }
         }
         
-        // Handle transaction submit (FIXED UPLOAD ISSUE)
-        async function handleTransactionSubmit(e) {
-            e.preventDefault();
-            
-            const transactionId = document.getElementById('transactionId').value;
-            const date = document.getElementById('transactionDate').value;
-            const description = document.getElementById('transactionDescription').value.trim();
-            const amount = document.getElementById('transactionAmount').value;
-            const notes = document.getElementById('transactionNotes').value.trim();
-            const imageFile = document.getElementById('transactionImage').files[0];
-            const existingImage = document.getElementById('existingImage').value;
-            
-            if (!date || !description || !amount || amount <= 0) {
-                alert('Mohon lengkapi semua field dengan benar');
-                return;
-            }
-            
-            try {
-                loadingOverlay.classList.remove('hidden');
-                hideTransactionModal();
-                
-                // Create form data
-                const formData = new FormData();
-                formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
-                formData.append('date', date);
-                formData.append('description', description);
-                formData.append('type', currentTransactionType);
-                formData.append('amount', amount);
-                formData.append('notes', notes);
-                formData.append('username', currentUser.username);
-                
-                if (transactionId) {
-                    formData.append('transactionId', transactionId);
-                }
-                
-                // Handle image upload - use direct file upload
-                if (imageFile) {
-                    formData.append('image', imageFile);
-                } else if (existingImage) {
-                    formData.append('existingImage', existingImage);
-                }
-                
-                // Add X-Requested-With header to prevent 302 redirect
-                const headers = new Headers();
-                headers.append('X-Requested-With', 'XMLHttpRequest');
-                
-                // Make the request with credentials and handle redirect
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: formData,
-                    headers: headers,
-                    credentials: 'include',
-                    redirect: 'manual' // Handle redirect manually
-                });
-                
-                // Check if response was redirected
-                if (response.type === 'opaqueredirect') {
-                    // If redirected, try again with the redirected URL
-                    const redirectedResponse = await fetch(response.url, {
-                        method: 'POST',
-                        body: formData,
-                        headers: headers,
-                        credentials: 'include'
-                    });
-                    
-                    const data = await redirectedResponse.json();
-                    handleTransactionResponse(data, transactionId);
-                } else {
-                    const data = await response.json();
-                    handleTransactionResponse(data, transactionId);
-                }
-            } catch (error) {
-                console.error("Transaction error:", error);
-                showNotification("Terjadi kesalahan saat memproses transaksi", false);
-            } finally {
-                loadingOverlay.classList.add('hidden');
-                document.getElementById('transactionId').value = '';
-            }
+// Ganti fungsi handleTransactionSubmit dengan ini:
+async function handleTransactionSubmit(e) {
+    e.preventDefault();
+    
+    const transactionId = document.getElementById('transactionId').value;
+    const date = document.getElementById('transactionDate').value;
+    const description = document.getElementById('transactionDescription').value.trim();
+    const amount = document.getElementById('transactionAmount').value;
+    const notes = document.getElementById('transactionNotes').value.trim();
+    const imageFile = document.getElementById('transactionImage').files[0];
+    const existingImage = document.getElementById('existingImage').value;
+    
+    if (!date || !description || !amount || amount <= 0) {
+        alert('Mohon lengkapi semua field dengan benar');
+        return;
+    }
+    
+    try {
+        loadingOverlay.classList.remove('hidden');
+        hideTransactionModal();
+        
+        const formData = new FormData();
+        formData.append('action', transactionId ? 'updateTransaction' : 'addTransaction');
+        formData.append('date', date);
+        formData.append('description', description);
+        formData.append('type', currentTransactionType);
+        formData.append('amount', amount);
+        formData.append('notes', notes);
+        formData.append('username', currentUser.username);
+        
+        if (transactionId) {
+            formData.append('transactionId', transactionId);
         }
         
-        // Handle transaction response
-        function handleTransactionResponse(data, transactionId) {
-            if (data.success) {
-                showNotification(transactionId ? 'Transaksi berhasil diperbarui!' : 'Transaksi berhasil disimpan!', true);
-                showDashboard(); // Refresh data
-            } else {
-                showNotification(data.message || (transactionId ? "Gagal memperbarui transaksi" : "Gagal menyimpan transaksi"), false);
-            }
+        // Handle image upload - kirim file langsung
+        if (imageFile) {
+            formData.append('image', imageFile);
+        } else if (existingImage) {
+            formData.append('existingImage', existingImage);
         }
         
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(transactionId ? 'Transaksi berhasil diperbarui!' : 'Transaksi berhasil disimpan!', true);
+            showDashboard(); // Refresh data
+        } else {
+            showNotification(data.message || (transactionId ? "Gagal memperbarui transaksi" : "Gagal menyimpan transaksi"), false);
+        }
+    } catch (error) {
+        console.error("Transaction error:", error);
+        showNotification("Terjadi kesalahan saat memproses transaksi", false);
+    } finally {
+        loadingOverlay.classList.add('hidden');
+        document.getElementById('transactionId').value = ''; // Clear transaction ID
+    }
+}        
         // Show recap modal
         function showRecapModal() {
             // Reset filters
@@ -1443,11 +1414,7 @@
                 
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    credentials: 'include'
+                    body: formData
                 });
                 
                 return await response.json();
