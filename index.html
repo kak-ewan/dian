@@ -643,7 +643,7 @@ async function loadAppConfig() {
         
         // ==================== EVENT HANDLERS ====================
         
-// Login form submission
+// Ganti fungsi login dengan ini:
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   
@@ -657,7 +657,22 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   
   showLoading();
   try {
-    const result = await callApi('login', { username, password });
+    // Gunakan FormData untuk mengirim data
+    const formData = new FormData();
+    formData.append('action', 'login');
+    formData.append('username', username);
+    formData.append('password', password);
+    
+    const response = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
     
     if (result.success) {
       currentUser = result.user;
@@ -669,7 +684,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     }
   } catch (error) {
     console.error('Login error:', error);
-    alert(error.message);
+    alert('Login gagal. Silakan cek username dan password Anda.');
   } finally {
     hideLoading();
   }
