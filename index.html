@@ -328,38 +328,28 @@
             }
         }
         
-        async function loadAppConfig() {
-            try {
-                const result = await callApi('getConfig');
-                if (result.success) {
-                    appConfig = result.data;
-                    
-                    // Update logo
-                    const logoContainer = document.getElementById('logoContainer');
-                    if (appConfig.logo) {
-                        logoContainer.innerHTML = `<img src="${appConfig.logo}" alt="Logo" class="h-24">`;
-                    }
-                    
-                    // Update description
-                    document.getElementById('description').textContent = appConfig.description || 'Sistem pencatatan keuangan sekolah';
-                    
-                    // Load users
-                    users = appConfig.users || [];
-                    const usernameSelect = document.getElementById('username');
-                    usernameSelect.innerHTML = '<option value="">Pilih User</option>';
-                    
-                    users.forEach(user => {
-                        const option = document.createElement('option');
-                        option.value = user.username;
-                        option.textContent = `${user.nama} (${user.role})`;
-                        usernameSelect.appendChild(option);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading app config:', error);
-                throw new Error('Gagal memuat konfigurasi aplikasi');
-            }
-        }
+async function loadAppConfig() {
+  try {
+    const result = await callApi('getConfig');
+    if (result.success) {
+      appConfig = result.data;
+      
+      // Set logo
+      const logoContainer = document.getElementById('logoContainer');
+      if (appConfig.logo) {
+        logoContainer.innerHTML = `<img src="${appConfig.logo}" alt="Logo" class="h-24">`;
+      }
+      
+      // Set description
+      document.getElementById('description').textContent = appConfig.description || 'Sistem pencatatan keuangan sekolah';
+      
+      // Tidak perlu lagi load users ke dropdown
+    }
+  } catch (error) {
+    console.error('Error loading app config:', error);
+    alert('Gagal memuat konfigurasi aplikasi');
+  }
+}
         
         async function loadSaldo() {
             try {
